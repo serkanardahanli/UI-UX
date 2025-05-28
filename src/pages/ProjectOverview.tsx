@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Share2, MoreHorizontal, Users, Activity, Calendar, Clock, AlertTriangle, TrendingUp, Star, Plus, Edit3, CheckCircle2, Circle, AlertCircle, Timer, BarChart3, PieChart, Target, Zap, MessageSquare, Paperclip, Flag, ChevronDown } from 'lucide-react';
+import CreateTaskActivity from '../components/CreateTaskActivity';
 
 interface ProjectOverviewProps {
   setCurrentView?: (view: string) => void;
@@ -11,6 +12,12 @@ export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [projectStatus, setProjectStatus] = useState('On Track');
   
+  // CreateTaskActivity popup state management
+  const [showCreatePopup, setShowCreatePopup] = useState(false);
+  const [createPopupType, setCreatePopupType] = useState('');
+  const [toastMessage, setToastMessage] = useState('');
+  const [showToast, setShowToast] = useState(false);
+
   const projectData = {
     name: 'Website Redesign Homepage',
     status: projectStatus,
@@ -132,6 +139,23 @@ export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps
     // Here you would typically make an API call to update the project
   };
 
+  // Functions for popup management
+  const openCreatePopup = (type = '') => {
+    setCreatePopupType(type);
+    setShowCreatePopup(true);
+  };
+
+  const closeCreatePopup = () => {
+    setShowCreatePopup(false);
+    setCreatePopupType('');
+  };
+
+  const showToastNotification = (message: string) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50" onClick={() => showStatusDropdown && setShowStatusDropdown(false)}>
       {/* Header */}
@@ -206,7 +230,10 @@ export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps
                 Share
               </button>
               {projectStatus !== 'Completed' && (
-                <button className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2">
+                <button 
+                  onClick={() => openCreatePopup('task')}
+                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+                >
                   <Plus className="w-4 h-4" />
                   Add Task
                 </button>
@@ -703,6 +730,27 @@ export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* CreateTaskActivity Popup */}
+      {showCreatePopup && (
+        <CreateTaskActivity
+          isOpen={showCreatePopup}
+          onClose={closeCreatePopup}
+          type={createPopupType}
+          onSuccess={(message) => {
+            closeCreatePopup();
+            showToastNotification(message);
+          }}
+        />
+      )}
+
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2">
+          <CheckCircle2 className="w-5 h-5" />
+          <span>{toastMessage}</span>
         </div>
       )}
     </div>

@@ -372,11 +372,12 @@ function PersonalDashboard({ setCurrentView, currentView = 'dashboard', setShowS
       <div className="bg-white border-b border-gray-200">
         <div className="px-6 py-3">
           <nav className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-                <Star className="w-4 h-4 text-white" />
-              </div>
-              <span className="font-semibold text-gray-900">FlowQi</span>
+            <div className="flex items-center gap-3">
+              <svg width="32" height="32" viewBox="0 0 160 157" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M88.6835 91.2495L73.1997 138.097L60.5294 109.394L88.6835 91.2495Z" fill="#9280FF"/>
+                <path d="M20 18L111.115 76.7578L88.684 91.2493L43.4762 70.9974L20 18Z" fill="#C449FF"/>
+                <path d="M75.7774 46.6198L98.6931 61.3377L103.579 46.7534L140 50.1347L86.6946 26.2973L75.7774 46.6198Z" fill="#9280FF"/>
+              </svg>
             </div>
             <div className="flex items-center gap-1">
               <button
