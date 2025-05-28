@@ -1,19 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-  <defs>
-    <linearGradient id="flowqi-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6366f1"/>
-      <stop offset="50%" stop-color="#8b5cf6"/>
-      <stop offset="100%" stop-color="#a855f7"/>
-    </linearGradient>
-  </defs>
-  
-  <!-- Main circle representing unity and flow -->
-  <circle cx="16" cy="16" r="14" fill="url(#flowqi-gradient)" opacity="0.9"/>
-  
-  <!-- Flow lines representing movement and productivity -->
-  <path d="M8 12 Q16 8 24 12 Q16 16 8 12" fill="none" stroke="white" stroke-width="2" opacity="0.8"/>
-  <path d="M8 20 Q16 16 24 20 Q16 24 8 20" fill="none" stroke="white" stroke-width="2" opacity="0.8"/>
-  
-  <!-- Central dot representing focus -->
-  <circle cx="16" cy="16" r="2" fill="white" opacity="0.9"/>
+<svg width="32" height="32" viewBox="0 0 160 157" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M88.6835 91.2495L73.1997 138.097L60.5294 109.394L88.6835 91.2495Z" fill="#9280FF"/>
+<path d="M20 18L111.115 76.7578L88.684 91.2493L43.4762 70.9974L20 18Z" fill="#C449FF"/>
+<path d="M75.7774 46.6198L98.6931 61.3377L103.579 46.7534L140 50.1347L86.6946 26.2973L75.7774 46.6198Z" fill="#9280FF"/>
 </svg> 
