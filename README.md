@@ -46,7 +46,7 @@ Een moderne, responsieve personal dashboard applicatie gebouwd met **React**, **
 
 ```bash
 # Clone het project
-git clone <jouw-repo-url>
+git clone https://github.com/serkanardahanli/UI-UX.git
 cd personal-dashboard
 
 # Installeer dependencies
