@@ -2,6 +2,10 @@
 
 Een moderne, responsieve personal dashboard applicatie gebouwd met **React**, **Vite**, en **Tailwind CSS**. Perfect voor team management, project tracking, en persoonlijke productiviteit.
 
+## 🚀 Live Demo
+
+Deployed on Vercel - Latest deployment: 2024-12-13
+
 ## ✨ Features
 
 ### 📊 Personal Dashboard
