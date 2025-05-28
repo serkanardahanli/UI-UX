@@ -8,6 +8,7 @@ import SubtaakPage from './pages/SubtaakPage';
 import CalendarPage from './pages/CalendarPage';
 import TaskBoardView from './pages/TaskBoardView';
 import TaskListView from './pages/TaskListView';
+import CreateTaskActivity from './components/CreateTaskActivity';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard', 'projects', 'inbox', 'tasks', 'subtask', 'subtaak', 'calendar', 'board', or 'list'
@@ -72,6 +73,8 @@ function PersonalDashboard({ setCurrentView, currentView = 'dashboard', setShowS
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
+  const [showCreatePopup, setShowCreatePopup] = useState(false);
+  const [createPopupType, setCreatePopupType] = useState('');
   
   // Update time every minute
   useEffect(() => {
@@ -349,6 +352,18 @@ function PersonalDashboard({ setCurrentView, currentView = 'dashboard', setShowS
       setShowToast(false);
       setToastMessage('');
     }, 3000);
+  };
+
+  // Open create popup
+  const openCreatePopup = (type = '') => {
+    setCreatePopupType(type);
+    setShowCreatePopup(true);
+  };
+
+  // Close create popup
+  const closeCreatePopup = () => {
+    setShowCreatePopup(false);
+    setCreatePopupType('');
   };
 
   return (
@@ -905,31 +920,31 @@ function PersonalDashboard({ setCurrentView, currentView = 'dashboard', setShowS
             {/* Quick Actions */}
             <div className="flex gap-3">
               <button 
-                onClick={() => setShowNewTaskForm(true)}
+                onClick={() => openCreatePopup('task')}
                 className="flex-1 px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
               >
                 <Plus className="w-4 h-4" />
-                New Task
+                Create Task
               </button>
               <button 
-                onClick={() => setCurrentView('subtask')}
-                className="flex-1 px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center gap-2"
+                onClick={() => openCreatePopup('activity')}
+                className="flex-1 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
               >
-                <Layers className="w-4 h-4" />
-                Subtask
+                <Calendar className="w-4 h-4" />
+                Create Activity
               </button>
             </div>
             <div className="flex gap-3">
               <button 
-                onClick={() => alert('Room booking feature coming soon!')}
-                className="flex-1 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                onClick={() => openCreatePopup()}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
               >
-                <Calendar className="w-4 h-4" />
-                Book Room
+                <Plus className="w-4 h-4" />
+                Create New
               </button>
               <button 
                 onClick={() => setShowSubtaskSidebar && setShowSubtaskSidebar(true)}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center gap-2"
               >
                 <Layers className="w-4 h-4" />
                 View Subtask
@@ -1004,6 +1019,13 @@ function PersonalDashboard({ setCurrentView, currentView = 'dashboard', setShowS
           </div>
         </div>
       )}
+
+      {/* Create Task/Activity Popup */}
+      <CreateTaskActivity 
+        isOpen={showCreatePopup}
+        onClose={closeCreatePopup}
+        initialType={createPopupType}
+      />
 
       {/* Toast Notification */}
       {showToast && (
