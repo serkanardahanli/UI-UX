@@ -1,7 +1,8 @@
 {
-  "name": "personal-dashboard",
+  "name": "flowqi-ui-ux",
+  "description": "FlowQi UI/UX - Modern Personal Dashboard for Team Management and Productivity",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
