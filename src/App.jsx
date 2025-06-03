@@ -9,9 +9,11 @@ import CalendarPage from './pages/CalendarPage';
 import TaskBoardView from './pages/TaskBoardView';
 import TaskListView from './pages/TaskListView';
 import CreateTaskActivity from './components/CreateTaskActivity';
+import HummyAgent from './components/HummyAgent';
+import CancelSubscriptionFlow from './pages/CancelSubscriptionFlow';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard', 'projects', 'inbox', 'tasks', 'subtask', 'subtaak', 'calendar', 'board', or 'list'
+  const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard', 'projects', 'inbox', 'tasks', 'subtask', 'subtaak', 'calendar', 'board', 'list', or 'cancel-subscription'
   const [showSubtaskSidebar, setShowSubtaskSidebar] = useState(false);
   
   if (currentView === 'projects') {
@@ -36,6 +38,10 @@ export default function App() {
   
   if (currentView === 'subtaak') {
     return <SubtaakPage />;
+  }
+  
+  if (currentView === 'cancel-subscription') {
+    return <CancelSubscriptionFlow setCurrentView={setCurrentView} />;
   }
   
   if (currentView === 'subtask') {
@@ -468,6 +474,17 @@ function PersonalDashboard({ setCurrentView, currentView = 'dashboard', setShowS
                 <List className="w-4 h-4" />
                 List
               </button>
+              <button
+                onClick={() => setCurrentView('cancel-subscription')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                  currentView === 'cancel-subscription'
+                    ? 'bg-red-100 text-red-700'
+                    : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
+                }`}
+              >
+                <X className="w-4 h-4" />
+                Cancel Subscription
+              </button>
             </div>
           </nav>
         </div>
@@ -542,16 +559,12 @@ function PersonalDashboard({ setCurrentView, currentView = 'dashboard', setShowS
               <div className="text-sm text-gray-500">
                 {userData.currentTime}
               </div>
-              <button 
-                onClick={markNotificationAsRead}
-                className="relative text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <Bell className="w-5 h-5" />
-                {notifications > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
-                    {notifications}
-                  </span>
-                )}
+              <button className="relative">
+                <Bell size={20} className="text-gray-600 hover:text-gray-800" />
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+              </button>
+              <button className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-medium">
+                {userData.initials}
               </button>
             </div>
           </div>
@@ -1052,6 +1065,9 @@ function PersonalDashboard({ setCurrentView, currentView = 'dashboard', setShowS
           </div>
         </div>
       )}
+
+      {/* Floating Hummy Agent */}
+      <HummyAgent />
     </div>
   );
 }

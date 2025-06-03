@@ -482,6 +482,40 @@ const TaskListView = () => {
     </svg>
   );
 
+  // FlowQi Hummy AI Assistant Component
+  const HummyAssistant = () => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+      <>
+        {/* Simple Floating Button - Make it very visible for testing */}
+        <div className="fixed bottom-4 right-4 z-50">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="w-16 h-16 bg-red-500 hover:bg-red-600 rounded-full shadow-lg flex items-center justify-center text-white text-2xl font-bold transition-all duration-300"
+            title="Hummy AI Assistant"
+          >
+            🦉
+          </button>
+        </div>
+
+        {/* Simple Popup for testing */}
+        {isOpen && (
+          <div className="fixed bottom-24 right-4 w-80 bg-white rounded-lg shadow-2xl border border-gray-200 p-4 z-50">
+            <h3 className="font-bold text-lg mb-2">Hi Serkan! 👋</h3>
+            <p className="text-gray-600 mb-4">Hummy is working!</p>
+            <button 
+              onClick={() => setIsOpen(false)}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Close
+            </button>
+          </div>
+        )}
+      </>
+    );
+  };
+
   const [tasks, setTasks] = useState(INITIAL_TASKS);
 
   // Reset function to restore all tasks
@@ -1156,6 +1190,9 @@ const TaskListView = () => {
         onClose={closeCreateModal}
         onTaskCreate={handleTaskCreate}
       />
+
+      {/* Hummy AI Assistant Component */}
+      <HummyAssistant />
     </div>
   );
 };
