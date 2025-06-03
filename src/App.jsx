@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, Users, Phone, Coffee, Briefcase, Home, Plane, Heart, CheckCircle2, Circle, AlertCircle, ArrowRight, Plus, ChevronRight, Bell, MessageSquare, Gift, FileText, Send, Smile, MapPin, Target, TrendingUp, Cake, PartyPopper, Star, BarChart3, X, Check, LayoutDashboard, FolderKanban, Inbox, CheckSquare, Layers, Search, Settings, User, Grid3X3, List, ShoppingCart } from 'lucide-react';
+import { Calendar, Clock, Users, Phone, Coffee, Briefcase, Home, Plane, Heart, CheckCircle2, Circle, AlertCircle, ArrowRight, Plus, ChevronRight, Bell, MessageSquare, Gift, FileText, Send, Smile, MapPin, Target, TrendingUp, Cake, PartyPopper, Star, BarChart3, X, Check, LayoutDashboard, FolderKanban, Inbox, CheckSquare, Layers, Search, Settings, User, Grid3X3, List, ShoppingCart, CreditCard } from 'lucide-react';
 import ProjectOverview from './pages/ProjectOverview';
 import InboxDashboard from './pages/InboxDashboard';
 import TaskDashboard from './pages/TaskDashboard';
@@ -12,9 +12,10 @@ import CreateTaskActivity from './components/CreateTaskActivity';
 import HummyAgent from './components/HummyAgent';
 import CancelSubscriptionFlow from './pages/CancelSubscriptionFlow';
 import AddProducts from './pages/AddProducts';
+import AddPaymentMethod from './pages/AddPaymentMethod';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard', 'projects', 'inbox', 'tasks', 'subtask', 'subtaak', 'calendar', 'board', 'list', 'cancel-subscription', or 'add-products'
+  const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard', 'projects', 'inbox', 'tasks', 'subtask', 'subtaak', 'calendar', 'board', 'list', 'cancel-subscription', 'add-products', 'add-payment-method'
   const [showSubtaskSidebar, setShowSubtaskSidebar] = useState(false);
   
   if (currentView === 'projects') {
@@ -46,7 +47,11 @@ export default function App() {
   }
   
   if (currentView === 'add-products') {
-    return <AddProducts setCurrentView={setCurrentView} />;
+    return <AddProducts />;
+  }
+
+  if (currentView === 'add-payment-method') {
+    return <AddPaymentMethod />;
   }
   
   if (currentView === 'subtask') {
@@ -467,6 +472,17 @@ function PersonalDashboard({ setCurrentView, currentView = 'dashboard', setShowS
               >
                 <ShoppingCart className="w-4 h-4" />
                 Add Products
+              </button>
+              <button
+                onClick={() => setCurrentView('add-payment-method')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                  currentView === 'add-payment-method'
+                    ? 'bg-purple-100 text-purple-700'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <CreditCard className="w-4 h-4" />
+                Add Payment
               </button>
               <button
                 onClick={() => setCurrentView('board')}
