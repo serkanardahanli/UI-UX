@@ -1,0 +1,187 @@
+{
+  "modules": [
+    {
+      "id": "project-management",
+      "label": "Project Management",
+      "icon": "FolderKanban",
+      "color": "blue",
+      "entry": "/projects",
+      "description": "Complete project and task management solution",
+      "pages": [
+        {
+          "path": "/projects",
+          "label": "Project Overview",
+          "component": "ProjectOverview",
+          "roles": ["admin", "manager", "user"]
+        },
+        {
+          "path": "/projects/board",
+          "label": "Project Board",
+          "component": "TaskBoardView",
+          "roles": ["admin", "manager", "user"]
+        },
+        {
+          "path": "/projects/gantt",
+          "label": "Gantt Chart",
+          "component": "GanttView",
+          "roles": ["admin", "manager"]
+        },
+        {
+          "path": "/tasks",
+          "label": "Task Dashboard",
+          "component": "TaskDashboard",
+          "roles": ["all"]
+        },
+        {
+          "path": "/tasks/board",
+          "label": "Task Board View",
+          "component": "TaskBoardView",
+          "roles": ["all"]
+        },
+        {
+          "path": "/tasks/list",
+          "label": "Task List View",
+          "component": "TaskListView",
+          "roles": ["all"]
+        },
+        {
+          "path": "/tasks/subtaak",
+          "label": "Subtask Manager",
+          "component": "SubtaakPage",
+          "roles": ["admin", "manager"]
+        }
+      ]
+    },
+    {
+      "id": "sales-tool",
+      "label": "Sales Tool",
+      "icon": "TrendingUp",
+      "color": "emerald",
+      "entry": "/sales/list",
+      "description": "Complete sales pipeline and deal management",
+      "pages": [
+        {
+          "path": "/sales/list",
+          "label": "List View",
+          "component": "SalesListView",
+          "roles": ["admin", "manager", "user"]
+        },
+        {
+          "path": "/sales/board",
+          "label": "Board View",
+          "component": "SalesBoardView",
+          "roles": ["admin", "manager", "user"]
+        },
+        {
+          "path": "/sales/deal/:id",
+          "label": "Deal Detail",
+          "component": "DealDetail",
+          "roles": ["admin", "manager", "user"]
+        },
+        {
+          "path": "/sales/settings",
+          "label": "Pipeline Settings",
+          "component": "PipelineSettings",
+          "roles": ["admin", "manager"]
+        }
+      ],
+      "permissions": {
+        "admin": ["sales-tool"],
+        "manager": ["sales-tool"],
+        "user": ["sales-tool"]
+      }
+    },
+    {
+      "id": "inbox",
+      "label": "Inbox",
+      "icon": "Inbox",
+      "color": "orange",
+      "entry": "/inbox",
+      "description": "Unified communication hub",
+      "pages": [
+        {
+          "path": "/inbox",
+          "label": "Messages",
+          "component": "InboxDashboard",
+          "roles": ["all"]
+        },
+        {
+          "path": "/inbox/notifications",
+          "label": "Notifications",
+          "component": "NotificationCenter",
+          "roles": ["all"]
+        }
+      ]
+    },
+    {
+      "id": "calendar",
+      "label": "Calendar",
+      "icon": "Calendar",
+      "color": "indigo",
+      "entry": "/calendar",
+      "description": "Schedule and time management",
+      "pages": [
+        {
+          "path": "/calendar",
+          "label": "Calendar View",
+          "component": "CalendarPage",
+          "roles": ["all"]
+        },
+        {
+          "path": "/calendar/events",
+          "label": "Events",
+          "component": "EventManager",
+          "roles": ["admin", "manager"]
+        }
+      ]
+    },
+    {
+      "id": "admin",
+      "label": "Admin Panel",
+      "icon": "Settings",
+      "color": "slate",
+      "entry": "/admin/billing/products",
+      "description": "Complete administration center",
+      "pages": [
+        {
+          "path": "/admin/billing/products",
+          "label": "Product Page",
+          "component": "AddProducts",
+          "roles": ["admin", "manager"]
+        },
+        {
+          "path": "/admin/billing/cancel-subscription",
+          "label": "Cancel Subscription",
+          "component": "CancelSubscriptionFlow",
+          "roles": ["admin"]
+        },
+        {
+          "path": "/admin/billing/payment-methods",
+          "label": "Payment Methods",
+          "component": "AddPaymentMethod",
+          "roles": ["admin", "manager"]
+        },
+        {
+          "path": "/admin/settings",
+          "label": "System Settings",
+          "component": "SystemSettings",
+          "roles": ["admin"]
+        }
+      ]
+    }
+  ],
+  "userRoles": {
+    "admin": {
+      "label": "Administrator",
+      "permissions": ["all"]
+    },
+    "manager": {
+      "label": "Manager",
+      "permissions": ["project-management", "sales-tool", "calendar", "admin"]
+    },
+    "user": {
+      "label": "User",
+      "permissions": ["project-management", "sales-tool", "inbox", "calendar"]
+    }
+  }
+} 
