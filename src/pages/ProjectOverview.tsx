@@ -1,9 +1,25 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Share2, MoreHorizontal, Users, Activity, Calendar, Clock, AlertTriangle, TrendingUp, Star, Plus, Edit3, CheckCircle2, Circle, AlertCircle, Timer, BarChart3, PieChart, Target, Zap, MessageSquare, Paperclip, Flag, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Share2, MoreHorizontal, Users, Activity, Calendar, Clock, AlertTriangle, TrendingUp, Star, Plus, Edit3, CheckCircle2, Circle, AlertCircle, Timer, BarChart3, PieChart, Target, Zap, MessageSquare, Paperclip, Flag, ChevronDown, X } from 'lucide-react';
 import CreateTaskActivity from '../components/CreateTaskActivity';
 
 interface ProjectOverviewProps {
   setCurrentView?: (view: string) => void;
+}
+
+interface TeamMember {
+  id: number;
+  name: string;
+  score: number;
+  avatar: string;
+  avatarBg: string;
+  details: {
+    completed: number;
+    progress: number;
+    updates: number;
+    inTime: number;
+    overdue: number;
+    noDate: number;
+  };
 }
 
 export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps) {
@@ -17,6 +33,20 @@ export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps
   const [createPopupType, setCreatePopupType] = useState('');
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
+  
+  // Team Activity Modal state management
+  const [selectedTeamMember, setSelectedTeamMember] = useState<TeamMember | null>(null);
+
+  // Team Activity Data
+  const teamActivityData: TeamMember[] = [
+    { id: 1, name: 'Clif', score: 66, avatar: 'C', avatarBg: 'bg-green-400', details: { completed: 50, progress: 10, updates: 14, inTime: 3, overdue: -9, noDate: -2 } },
+    { id: 2, name: 'Serkan', score: 33, avatar: 'S', avatarBg: 'bg-blue-400', details: { completed: 25, progress: 10, updates: 18, inTime: 5, overdue: -15, noDate: -10 } },
+    { id: 3, name: 'Laura', score: 58, avatar: 'L', avatarBg: 'bg-pink-400', details: { completed: 40, progress: 15, updates: 12, inTime: 8, overdue: -9, noDate: -8 } },
+    { id: 4, name: 'Tom', score: 21, avatar: 'T', avatarBg: 'bg-red-400', details: { completed: 20, progress: 5, updates: 6, inTime: 2, overdue: -10, noDate: -2 } },
+    { id: 5, name: 'Aisha', score: 45, avatar: 'A', avatarBg: 'bg-orange-400', details: { completed: 35, progress: 10, updates: 10, inTime: 5, overdue: -12, noDate: -3 } },
+    { id: 6, name: 'Bram', score: 15, avatar: 'B', avatarBg: 'bg-indigo-400', details: { completed: 10, progress: 5, updates: 5, inTime: 1, overdue: -3, noDate: -3 } },
+    { id: 7, name: 'Eva', score: 62, avatar: 'E', avatarBg: 'bg-emerald-400', details: { completed: 45, progress: 12, updates: 15, inTime: 10, overdue: -15, noDate: -5 } },
+  ].sort((a, b) => b.score - a.score);
 
   const projectData = {
     name: 'Website Redesign Homepage',
@@ -37,10 +67,11 @@ export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps
       { name: 'Lisa Park', avatar: 'LP', color: 'bg-indigo-500' }
     ],
     tasks: {
-      total: 23,
-      completed: 12,
-      inProgress: 8,
-      overdue: 3
+      total: 65,
+      inProgress: 28,
+      overdue: 12,
+      noAssignment: 15,
+      noDueDate: 10
     },
     activity: {
       updates: 32,
@@ -51,40 +82,6 @@ export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps
       { name: 'Sales Tool', icon: '📊', color: 'bg-blue-100 text-blue-700' },
       { name: 'Support Tool', icon: '🎧', color: 'bg-green-100 text-green-700' },
       { name: 'CRM', icon: '👥', color: 'bg-purple-100 text-purple-700' }
-    ],
-    projectResources: [
-      { 
-        type: 'documentation',
-        name: 'Project Requirements',
-        icon: '📄',
-        lastUpdated: '2 days ago',
-        author: 'Sarah Johnson',
-        inFlowQiDocs: true
-      },
-      {
-        type: 'design',
-        name: 'UI Mockups v2.3',
-        icon: '🎨',
-        lastUpdated: 'Yesterday',
-        author: 'Emma Wilson',
-        fileType: 'Figma'
-      },
-      {
-        type: 'meeting',
-        name: 'Sprint Planning Notes',
-        icon: '📝',
-        lastUpdated: 'Today at 11:00',
-        author: 'Michael Chen',
-        inFlowQiDocs: true
-      },
-      {
-        type: 'spreadsheet',
-        name: 'Budget Tracker',
-        icon: '📊',
-        lastUpdated: '5 days ago',
-        author: 'Alex Morgan',
-        fileType: 'Excel'
-      }
     ],
     recentActivity: [
       { user: 'Sarah Johnson', action: 'added 3 tasks to UI Development', time: 'Today at 9:32 AM', avatar: 'SJ', color: 'bg-green-500' },
@@ -100,11 +97,6 @@ export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps
       total: 80,
       used: 65,
       percentage: 81
-    },
-    risks: {
-      resourceAllocation: 'Low',
-      timelinePressure: 'Medium',
-      technicalComplexity: 'High'
     }
   };
 
@@ -328,41 +320,78 @@ export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps
                 <div className="text-3xl font-bold text-gray-900 mb-3">{projectData.tasks.total} total</div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Completed</span>
-                    <span className="font-medium text-green-600">{projectData.tasks.completed}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">In Progress</span>
-                    <span className="font-medium text-blue-600">{projectData.tasks.inProgress}</span>
+                    <span className="font-medium text-green-600">{projectData.tasks.inProgress}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">Overdue</span>
                     <span className="font-medium text-red-600">{projectData.tasks.overdue}</span>
                   </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">No Assignment</span>
+                    <span className="font-medium text-gray-500">{projectData.tasks.noAssignment}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">No Due Date</span>
+                    <span className="font-medium text-yellow-600">{projectData.tasks.noDueDate}</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Activity Score Card */}
+              {/* Team Activity Score Card */}
               <div className="bg-white rounded-xl p-5 border border-gray-200">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-purple-600" />
-                    <h3 className="font-medium text-gray-900">Activity Score</h3>
-                  </div>
-                  <button className="text-gray-400 hover:text-gray-600">
-                    <MoreHorizontal className="w-4 h-4" />
-                  </button>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-medium text-gray-900">Team Activity</h3>
+                  <select className="text-sm font-medium text-gray-500 border-none bg-transparent focus:ring-0 py-0 pr-8">
+                    <option>Deze week</option>
+                    <option>Vorige week</option>
+                    <option>Deze maand</option>
+                  </select>
                 </div>
-                <div className="text-3xl font-bold text-gray-900 mb-3">{projectData.activity.updates} updates</div>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-[10px] font-medium">
-                    SJ
+
+                {/* Podium / #1 Performer */}
+                <div className="mb-4">
+                  <div 
+                    className="flex items-center gap-4 p-3 rounded-lg bg-indigo-50 border border-indigo-200 cursor-pointer hover:bg-indigo-100 transition-colors"
+                    onClick={() => setSelectedTeamMember(teamActivityData[0])}
+                  >
+                    <div className="relative">
+                      <div className={`w-11 h-11 rounded-full flex items-center justify-center text-white font-semibold ${teamActivityData[0].avatarBg}`}>
+                        {teamActivityData[0].avatar}
+                      </div>
+                      <span className="absolute -top-2 -right-2 text-xl">🏆</span>
+                    </div>
+                    <div className="flex-grow">
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-gray-800">{teamActivityData[0].name}</span>
+                        <span className="font-bold text-indigo-600 text-lg">{teamActivityData[0].score}</span>
+                      </div>
+                      <div className="bg-indigo-200 w-full h-1.5 rounded-full mt-1">
+                        <div 
+                          className="bg-indigo-500 h-1.5 rounded-full transition-all duration-500" 
+                          style={{ width: `${(teamActivityData[0].score / Math.max(...teamActivityData.map(u => u.score), 1)) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
                   </div>
-                  <span className="text-sm text-gray-600">{projectData.activity.topContributor} has most actions</span>
                 </div>
-                <div className="flex items-center gap-1 text-sm">
-                  <TrendingUp className="w-4 h-4 text-green-500" />
-                  <span className="text-green-600 font-medium">{projectData.activity.trend}</span>
+
+                {/* Rest of the team in a scrollable list */}
+                <div className="space-y-2 max-h-32 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+                  {teamActivityData.slice(1).map((user, index) => (
+                    <div
+                      key={user.id}
+                      className="flex items-center gap-3 p-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                      onClick={() => setSelectedTeamMember(user)}
+                    >
+                      <span className="text-sm font-medium text-gray-400 w-5 text-center">{index + 2}</span>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm ${user.avatarBg}`}>
+                        {user.avatar}
+                      </div>
+                      <span className="flex-grow font-semibold text-gray-700 text-sm">{user.name}</span>
+                      <span className="font-bold text-gray-600 text-sm">{user.score}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -378,141 +407,99 @@ export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps
               <div className="flex items-center justify-center">
                 <div className="relative w-48 h-48">
                   <svg className="w-48 h-48 transform -rotate-90">
-                    <circle cx="96" cy="96" r="80" stroke="#E5E7EB" strokeWidth="24" fill="none" />
-                    <circle cx="96" cy="96" r="80" stroke="#10B981" strokeWidth="24" fill="none" 
-                      strokeDasharray={`${2 * Math.PI * 80 * (projectData.tasks.completed / projectData.tasks.total)} ${2 * Math.PI * 80}`} 
-                      strokeDashoffset="0" />
-                    <circle cx="96" cy="96" r="80" stroke="#3B82F6" strokeWidth="24" fill="none" 
+                    <circle cx="96" cy="96" r="80" stroke="#E5E7EB" strokeWidth="20" fill="none" />
+                    
+                    {/* In Progress - Green */}
+                    <circle cx="96" cy="96" r="80" stroke="#10B981" strokeWidth="20" fill="none" 
                       strokeDasharray={`${2 * Math.PI * 80 * (projectData.tasks.inProgress / projectData.tasks.total)} ${2 * Math.PI * 80}`} 
-                      strokeDashoffset={`-${2 * Math.PI * 80 * (projectData.tasks.completed / projectData.tasks.total)}`} />
-                    <circle cx="96" cy="96" r="80" stroke="#EF4444" strokeWidth="24" fill="none" 
+                      strokeDashoffset="0" />
+                    
+                    {/* Overdue - Red */}
+                    <circle cx="96" cy="96" r="80" stroke="#EF4444" strokeWidth="20" fill="none" 
                       strokeDasharray={`${2 * Math.PI * 80 * (projectData.tasks.overdue / projectData.tasks.total)} ${2 * Math.PI * 80}`} 
-                      strokeDashoffset={`-${2 * Math.PI * 80 * ((projectData.tasks.completed + projectData.tasks.inProgress) / projectData.tasks.total)}`} />
+                      strokeDashoffset={`-${2 * Math.PI * 80 * (projectData.tasks.inProgress / projectData.tasks.total)}`} />
+                    
+                    {/* No Assignment - Gray */}
+                    <circle cx="96" cy="96" r="80" stroke="#9CA3AF" strokeWidth="20" fill="none" 
+                      strokeDasharray={`${2 * Math.PI * 80 * (projectData.tasks.noAssignment / projectData.tasks.total)} ${2 * Math.PI * 80}`} 
+                      strokeDashoffset={`-${2 * Math.PI * 80 * ((projectData.tasks.inProgress + projectData.tasks.overdue) / projectData.tasks.total)}`} />
+                    
+                    {/* No Due Date - Yellow */}
+                    <circle cx="96" cy="96" r="80" stroke="#F59E0B" strokeWidth="20" fill="none" 
+                      strokeDasharray={`${2 * Math.PI * 80 * (projectData.tasks.noDueDate / projectData.tasks.total)} ${2 * Math.PI * 80}`} 
+                      strokeDashoffset={`-${2 * Math.PI * 80 * ((projectData.tasks.inProgress + projectData.tasks.overdue + projectData.tasks.noAssignment) / projectData.tasks.total)}`} />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-gray-900">{Math.round((projectData.tasks.completed / projectData.tasks.total) * 100)}%</div>
-                      <div className="text-sm text-gray-600">Complete</div>
+                      <div className="text-3xl font-bold text-gray-900">{Math.round((projectData.tasks.inProgress / projectData.tasks.total) * 100)}%</div>
+                      <div className="text-sm text-gray-600">On Track</div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="flex items-center justify-center gap-6 mt-6">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="text-sm text-gray-600">Completed</span>
+              <div className="grid grid-cols-2 gap-4 mt-6">
+                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">In Progress</span>
+                  </div>
+                  <span className="text-sm font-bold text-green-600">{projectData.tasks.inProgress}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <span className="text-sm text-gray-600">In Progress</span>
+                <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">Overdue</span>
+                  </div>
+                  <span className="text-sm font-bold text-red-600">{projectData.tasks.overdue}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <span className="text-sm text-gray-600">Overdue</span>
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">No Assignment</span>
+                  </div>
+                  <span className="text-sm font-bold text-gray-600">{projectData.tasks.noAssignment}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">No Due Date</span>
+                  </div>
+                  <span className="text-sm font-bold text-yellow-600">{projectData.tasks.noDueDate}</span>
                 </div>
               </div>
             </div>
 
-            {/* Time Tracking & Risk Factors */}
-            <div className="grid grid-cols-2 gap-4">
-              {/* Time Tracking */}
-              <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-medium text-gray-900">Time Tracking</h3>
-                  <button className="text-gray-400 hover:text-gray-600">
-                    <MoreHorizontal className="w-4 h-4" />
-                  </button>
-                </div>
-                <div className="mb-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-600">Hours used</span>
-                    <span className="text-sm font-medium text-gray-900">{projectData.timeTracking.used}/{projectData.timeTracking.total}h</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3">
-                    <div 
-                      className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-500"
-                      style={{ width: `${projectData.timeTracking.percentage}%` }}
-                    ></div>
-                  </div>
-                  <div className="text-right mt-1">
-                    <span className="text-xs text-gray-500">{projectData.timeTracking.percentage}% utilized</span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">{projectData.timeTracking.used}h</div>
-                    <div className="text-xs text-gray-500">Logged this week</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">{projectData.timeTracking.total - projectData.timeTracking.used}h</div>
-                    <div className="text-xs text-gray-500">Remaining</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Risk Factors */}
-              <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-medium text-gray-900">Risk Factors</h3>
-                  <button className="text-gray-400 hover:text-gray-600">
-                    <MoreHorizontal className="w-4 h-4" />
-                  </button>
-                </div>
-                <div className="grid grid-cols-3 gap-3 mb-4">
-                <button className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
-                  <div className="flex flex-col items-center gap-1">
-                    <svg className="w-5 h-5 text-gray-400 group-hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                    <span className="text-xs text-gray-600">Upload</span>
-                  </div>
-                </button>
-                <button className="p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors group">
-                  <div className="flex flex-col items-center gap-1">
-                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span className="text-xs text-purple-700 font-medium">FlowQi Docs</span>
-                  </div>
-                </button>
-                <button className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
-                  <div className="flex flex-col items-center gap-1">
-                    <svg className="w-5 h-5 text-gray-400 group-hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                    </svg>
-                    <span className="text-xs text-gray-600">Link</span>
-                  </div>
+            {/* Time Tracking */}
+            <div className="bg-white rounded-xl p-6 border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-medium text-gray-900">Time Tracking</h3>
+                <button className="text-gray-400 hover:text-gray-600">
+                  <MoreHorizontal className="w-4 h-4" />
                 </button>
               </div>
-              
-              <div className="space-y-3">
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-gray-700">Resource Allocation</span>
-                      <span className="text-sm font-medium text-green-600">{projectData.risks.resourceAllocation}</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-500 h-2 rounded-full" style={{ width: '20%' }}></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-gray-700">Timeline Pressure</span>
-                      <span className="text-sm font-medium text-yellow-600">{projectData.risks.timelinePressure}</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-yellow-500 h-2 rounded-full" style={{ width: '50%' }}></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-gray-700">Technical Complexity</span>
-                      <span className="text-sm font-medium text-red-600">{projectData.risks.technicalComplexity}</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-red-500 h-2 rounded-full" style={{ width: '80%' }}></div>
-                    </div>
-                  </div>
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-600">Hours used</span>
+                  <span className="text-sm font-medium text-gray-900">{projectData.timeTracking.used}/{projectData.timeTracking.total}h</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-500"
+                    style={{ width: `${projectData.timeTracking.percentage}%` }}
+                  ></div>
+                </div>
+                <div className="text-right mt-1">
+                  <span className="text-xs text-gray-500">{projectData.timeTracking.percentage}% utilized</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                <div>
+                  <div className="text-2xl font-bold text-gray-900">{projectData.timeTracking.used}h</div>
+                  <div className="text-xs text-gray-500">Logged this week</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-gray-900">{projectData.timeTracking.total - projectData.timeTracking.used}h</div>
+                  <div className="text-xs text-gray-500">Remaining</div>
                 </div>
               </div>
             </div>
@@ -536,61 +523,6 @@ export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps
                 <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">Mobile</span>
                 <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">High Priority</span>
                 <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full">Q3 Goals</span>
-              </div>
-            </div>
-
-            {/* Project Resources */}
-            <div className="bg-white rounded-xl p-5 border border-gray-200">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Paperclip className="w-5 h-5 text-purple-600" />
-                  <h3 className="font-medium text-gray-900">Project Resources</h3>
-                </div>
-                <button className="text-sm text-purple-600 hover:text-purple-700 font-medium">
-                  Open Docs
-                </button>
-              </div>
-              
-              <div className="space-y-3">
-                {projectData.projectResources.map((resource, i) => (
-                  <div key={i} className="group">
-                    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                      <div className="text-2xl flex-shrink-0">{resource.icon}</div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h4 className="text-sm font-medium text-gray-900 truncate">{resource.name}</h4>
-                          {resource.inFlowQiDocs && (
-                            <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">
-                              Docs
-                            </span>
-                          )}
-                          {resource.fileType && (
-                            <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
-                              {resource.fileType}
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <span className="text-xs text-gray-500">{resource.lastUpdated}</span>
-                          <span className="text-xs text-gray-400">•</span>
-                          <span className="text-xs text-gray-500">{resource.author}</span>
-                        </div>
-                      </div>
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <button className="w-full text-sm text-gray-600 hover:text-gray-900 font-medium flex items-center justify-center gap-2 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                  <Plus className="w-4 h-4" />
-                  Add Resource
-                </button>
               </div>
             </div>
 
@@ -663,6 +595,57 @@ export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps
         </div>
       </div>
 
+      {/* Team Member Details Modal */}
+      {selectedTeamMember && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setSelectedTeamMember(null)}>
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 transform transition-all" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-4 border-b">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${selectedTeamMember.avatarBg}`}>
+                  {selectedTeamMember.avatar}
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">{selectedTeamMember.name}</h3>
+                  <p className="text-sm text-gray-500">Score-details</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedTeamMember(null)}
+                className="text-2xl leading-none text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-6 grid grid-cols-2 gap-x-8 gap-y-4 text-sm">
+              <div className="flex justify-between">
+                <span>✅ Taken voltooid</span>
+                <span className="font-semibold text-green-600">+{selectedTeamMember.details.completed}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>🚧 In progress</span>
+                <span className="font-semibold text-blue-600">+{selectedTeamMember.details.progress}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>💬 Updates</span>
+                <span className="font-semibold text-blue-600">+{selectedTeamMember.details.updates}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>🗓️ Op tijd</span>
+                <span className="font-semibold text-green-600">+{selectedTeamMember.details.inTime}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>⚠️ Te laat</span>
+                <span className="font-semibold text-red-600">{selectedTeamMember.details.overdue}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>❌ Geen datum</span>
+                <span className="font-semibold text-orange-600">{selectedTeamMember.details.noDate}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Complete Project Modal */}
       {showCompleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -686,8 +669,8 @@ export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps
                     <span className="font-medium text-gray-900">{projectData.tasks.total}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Completed</span>
-                    <span className="font-medium text-green-600">{projectData.tasks.completed}</span>
+                    <span className="text-gray-600">In Progress</span>
+                    <span className="font-medium text-green-600">{projectData.tasks.inProgress}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Duration</span>
@@ -738,11 +721,7 @@ export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps
         <CreateTaskActivity
           isOpen={showCreatePopup}
           onClose={closeCreatePopup}
-          type={createPopupType}
-          onSuccess={(message) => {
-            closeCreatePopup();
-            showToastNotification(message);
-          }}
+          initialType={createPopupType}
         />
       )}
 
