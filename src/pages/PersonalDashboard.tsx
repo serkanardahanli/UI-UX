@@ -17,6 +17,7 @@ import {
   Heart,
   Package
 } from 'lucide-react';
+import CreateTaskActivity from '../components/CreateTaskActivity';
 
 interface PersonalDashboardProps {
   setCurrentView?: (view: string) => void;
@@ -45,6 +46,10 @@ export default function PersonalDashboard({ setCurrentView }: PersonalDashboardP
       reminder: null
     }
   ]);
+
+  // CreateTaskActivity popup state management
+  const [showCreatePopup, setShowCreatePopup] = useState(false);
+  const [createPopupType, setCreatePopupType] = useState('');
 
   const periodLabels = {
     today: {
@@ -239,6 +244,17 @@ export default function PersonalDashboard({ setCurrentView }: PersonalDashboardP
     }
   };
 
+  // Functions for popup management
+  const openCreatePopup = (type = '') => {
+    setCreatePopupType(type);
+    setShowCreatePopup(true);
+  };
+
+  const closeCreatePopup = () => {
+    setShowCreatePopup(false);
+    setCreatePopupType('');
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 0:
@@ -362,9 +378,12 @@ export default function PersonalDashboard({ setCurrentView }: PersonalDashboardP
                   ))}
                 </div>
               </div>
-              <button className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 text-white rounded-md text-xs cursor-pointer hover:bg-purple-700 transition-colors">
+              <button 
+                onClick={() => openCreatePopup()}
+                className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 text-white rounded-md text-xs cursor-pointer hover:bg-purple-700 transition-colors"
+              >
                 <Plus className="w-3.5 h-3.5" />
-                New Quote
+                Create New
               </button>
             </div>
             
@@ -552,6 +571,15 @@ export default function PersonalDashboard({ setCurrentView }: PersonalDashboardP
           </div>
         </aside>
       </div>
+
+      {/* CreateTaskActivity Popup */}
+      {showCreatePopup && (
+        <CreateTaskActivity
+          isOpen={showCreatePopup}
+          onClose={closeCreatePopup}
+          initialType={createPopupType}
+        />
+      )}
     </div>
   );
 } 

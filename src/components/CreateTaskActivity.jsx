@@ -66,8 +66,7 @@ const CreateTaskActivity = ({ isOpen, onClose, initialType = '' }) => {
   const userModules = [
     { id: 'projects', name: 'Project Management', icon: Target, color: 'bg-blue-500' },
     { id: 'sales', name: 'Sales Tool', icon: ShoppingCart, color: 'bg-green-500' },
-    { id: 'support', name: 'Support Tool', icon: Headphones, color: 'bg-purple-500' },
-    { id: 'hr', name: 'HR Tool', icon: Users, color: 'bg-orange-500' }
+    { id: 'support', name: 'Support Tool', icon: Headphones, color: 'bg-purple-500' }
   ];
 
   const searchData = {
@@ -214,7 +213,6 @@ const CreateTaskActivity = ({ isOpen, onClose, initialType = '' }) => {
     if (formData.module === 'sales') return 'Deal';
     if (formData.module === 'support') return 'Ticket';
     if (formData.module === 'projects') return 'Project Task';
-    if (formData.module === 'hr') return 'HR Case';
     return 'Item';
   };
 
