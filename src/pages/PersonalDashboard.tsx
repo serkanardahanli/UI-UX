@@ -351,8 +351,19 @@ export default function PersonalDashboard({ setCurrentView }: PersonalDashboardP
           
           {/* Content Header */}
           <div className="p-6 bg-gradient-to-r from-purple-600 to-purple-400 text-white">
-            <h1 className="text-3xl font-semibold mb-2">{getGreeting()}, Serkan!</h1>
-            <p className="opacity-90">{getCurrentDate()}</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-semibold mb-2">{getGreeting()}, Serkan!</h1>
+                <p className="opacity-90">{getCurrentDate()}</p>
+              </div>
+              <button 
+                onClick={() => openCreatePopup()}
+                className="px-4 py-2 text-sm font-medium bg-white text-purple-600 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Create +
+              </button>
+            </div>
           </div>
 
           {/* Period Filter and Stats */}
