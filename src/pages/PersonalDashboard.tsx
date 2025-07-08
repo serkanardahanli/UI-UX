@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Search, 
   Phone, 
   Users, 
   Mail, 
@@ -16,8 +15,7 @@ import {
   FileText,
   Target,
   Heart,
-  Package,
-  Home
+  Package
 } from 'lucide-react';
 
 interface PersonalDashboardProps {
@@ -32,6 +30,7 @@ export default function PersonalDashboard({ setCurrentView }: PersonalDashboardP
   const [activeTab, setActiveTab] = useState<TabType>(0);
   const [noteText, setNoteText] = useState('');
   const [reminderDate, setReminderDate] = useState('');
+  const [currentTime, setCurrentTime] = useState(new Date());
   const [savedNotes, setSavedNotes] = useState([
     {
       id: 1,
@@ -187,10 +186,35 @@ export default function PersonalDashboard({ setCurrentView }: PersonalDashboardP
       time: '40% probability',
       iconBg: 'bg-indigo-100',
       iconColor: 'text-indigo-600'
-    }
-  ];
+         }
+   ];
 
-  const saveNote = () => {
+   // Update time every minute
+   useEffect(() => {
+     const timer = setInterval(() => {
+       setCurrentTime(new Date());
+     }, 60000);
+     return () => clearInterval(timer);
+   }, []);
+
+   const getGreeting = () => {
+     const hour = currentTime.getHours();
+     if (hour < 12) return 'Good morning';
+     if (hour < 17) return 'Good afternoon';
+     return 'Good evening';
+   };
+
+   const getCurrentDate = () => {
+     const options: Intl.DateTimeFormatOptions = { 
+       weekday: 'long', 
+       year: 'numeric', 
+       month: 'long', 
+       day: 'numeric' 
+     };
+     return currentTime.toLocaleDateString('en-US', options);
+   };
+
+   const saveNote = () => {
     if (noteText.trim()) {
       const now = new Date();
       const timestamp = `Today at ${now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
@@ -304,66 +328,15 @@ export default function PersonalDashboard({ setCurrentView }: PersonalDashboardP
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-5 max-w-[1600px] mx-auto p-5">
-        
-        {/* Header */}
-        <header className="lg:col-span-2 flex flex-col lg:flex-row justify-between items-start lg:items-center mb-3">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6 mb-4 lg:mb-0">
-            <div className="flex items-center gap-2 text-2xl font-bold text-purple-600">
-              <Home className="w-8 h-8" />
-              FlowQi
-            </div>
-            
-            <nav className="flex gap-2">
-              <button className="px-4 py-2 border border-transparent rounded-lg bg-purple-600 text-white text-sm">
-                Dashboard
-              </button>
-              <button 
-                onClick={() => setCurrentView && setCurrentView('/inbox')}
-                className="px-4 py-2 border border-transparent rounded-lg bg-transparent text-gray-600 hover:bg-white hover:border-gray-200 hover:text-gray-900 text-sm transition-all"
-              >
-                CRM
-              </button>
-              <button 
-                onClick={() => setCurrentView && setCurrentView('/sales/list')}
-                className="px-4 py-2 border border-transparent rounded-lg bg-transparent text-gray-600 hover:bg-white hover:border-gray-200 hover:text-gray-900 text-sm transition-all"
-              >
-                Sales Tool
-              </button>
-              <button 
-                onClick={() => setCurrentView && setCurrentView('/projects')}
-                className="px-4 py-2 border border-transparent rounded-lg bg-transparent text-gray-600 hover:bg-white hover:border-gray-200 hover:text-gray-900 text-sm transition-all"
-              >
-                Project Management
-              </button>
-            </nav>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                className="pl-9 pr-4 py-2 border border-gray-200 rounded-[20px] w-[250px] text-sm bg-white"
-              />
-            </div>
-            
-            <div className="flex items-center gap-3 py-1 px-4 rounded-3xl bg-white border border-gray-200 cursor-pointer">
-              <span className="text-sm">John Doe</span>
-              <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-medium text-sm">
-                JD
-              </div>
-            </div>
-          </div>
-        </header>
+
 
         {/* Main Content */}
         <main className="bg-white rounded-xl shadow-sm flex flex-col overflow-hidden">
           
           {/* Content Header */}
           <div className="p-6 bg-gradient-to-r from-purple-600 to-purple-400 text-white">
-            <h1 className="text-3xl font-semibold mb-2">Good Morning, John!</h1>
-            <p className="opacity-90">Tuesday, July 8, 2025</p>
+            <h1 className="text-3xl font-semibold mb-2">{getGreeting()}, Serkan!</h1>
+            <p className="opacity-90">{getCurrentDate()}</p>
           </div>
 
           {/* Period Filter and Stats */}
