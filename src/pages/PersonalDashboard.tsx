@@ -245,7 +245,7 @@ export default function PersonalDashboard({ setCurrentView }: PersonalDashboardP
   };
 
   // Functions for popup management
-  const openCreatePopup = (type = '') => {
+  const openCreatePopup = (type = 'activity') => {
     setCreatePopupType(type);
     setShowCreatePopup(true);
   };

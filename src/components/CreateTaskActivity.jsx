@@ -56,7 +56,7 @@ const CreateTaskActivity = ({ isOpen, onClose, initialType = '' }) => {
         module: '',
         project: null,
         linkedItem: null,
-        isPrivate: false,
+        isPrivate: initialType === 'activity',
         assignedTo: null,
         status: 'todo'
       });
