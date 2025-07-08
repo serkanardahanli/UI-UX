@@ -1,6 +1,22 @@
 {
   "modules": [
     {
+      "id": "dashboard",
+      "label": "Personal Dashboard",
+      "icon": "LayoutDashboard",
+      "color": "purple",
+      "entry": "/dashboard",
+      "description": "Your personal workspace and overview",
+      "pages": [
+        {
+          "path": "/dashboard",
+          "label": "Dashboard",
+          "component": "Dashboard",
+          "roles": ["all"]
+        }
+      ]
+    },
+    {
       "id": "project-management",
       "label": "Project Management",
       "icon": "FolderKanban",

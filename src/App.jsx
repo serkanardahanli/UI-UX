@@ -21,6 +21,7 @@ import AddPaymentMethod from './pages/AddPaymentMethod';
 import ModuleManager from './components/ModuleManager';
 import modulesConfig from './config/modules.json';
 import PipelineSettings from './pages/PipelineSettings';
+import PersonalDashboard from './pages/PersonalDashboard';
 
 // Placeholder components for missing components
 const GanttView = () => (
@@ -80,180 +81,11 @@ const componentMap = {
   NotificationCenter,
   EventManager,
   SystemSettings,
-  Dashboard: () => <PersonalDashboard />,
+  Dashboard: PersonalDashboard,
   SalesOverview
 };
 
-function PersonalDashboard() {
-  const [currentTime, setCurrentTime] = useState(new Date());
-  
-  // Update time every minute
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000);
-    return () => clearInterval(timer);
-  }, []);
 
-  const userData = {
-    name: 'Serkan Ardahanli',
-    role: 'Product Manager',
-    avatar: 'SA',
-    currentTime: currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-    currentDate: currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
-  };
-
-  const greeting = () => {
-    const hour = currentTime.getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
-  };
-
-  const quickStats = [
-    { label: 'Active Projects', value: 8, change: '+2 this week', color: 'text-blue-600' },
-    { label: 'Pending Tasks', value: 23, change: '-5 from yesterday', color: 'text-orange-600' },
-    { label: 'Team Members', value: 12, change: 'All available', color: 'text-green-600' },
-    { label: 'Completed Today', value: 7, change: '+3 from yesterday', color: 'text-purple-600' }
-  ];
-
-  const recentActivity = [
-    { 
-      action: 'Updated project timeline', 
-      target: 'FlowQi v3.0', 
-      time: '2 minutes ago',
-      type: 'project'
-    },
-    { 
-      action: 'Completed task', 
-      target: 'Review client proposal', 
-      time: '15 minutes ago',
-      type: 'task'
-    },
-    { 
-      action: 'Meeting scheduled', 
-      target: 'Sprint Planning', 
-      time: '1 hour ago',
-      type: 'calendar'
-    },
-    { 
-      action: 'New message received', 
-      target: 'From Emma Wilson', 
-      time: '2 hours ago',
-      type: 'inbox'
-    }
-  ];
-
-  return (
-    <div className="p-6 max-w-7xl mx-auto">
-      {/* Welcome Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-          {greeting()}, {userData.name.split(' ')[0]}! 👋
-        </h1>
-        <p className="text-gray-600">
-          Here's what's happening with your projects today.
-        </p>
-      </div>
-
-      {/* Quick Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {quickStats.map((stat, index) => (
-          <div key={index} className="bg-white rounded-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-gray-500">{stat.label}</h3>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
-              <span className={`text-xs font-medium ${stat.color}`}>
-                {stat.change}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Activity */}
-        <div className="lg:col-span-2 bg-white rounded-lg border border-gray-100">
-          <div className="p-6 border-b border-gray-100">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              {recentActivity.map((activity, index) => (
-                <div key={index} className="flex items-start gap-4">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
-                    activity.type === 'project' ? 'bg-blue-500' :
-                    activity.type === 'task' ? 'bg-green-500' :
-                    activity.type === 'calendar' ? 'bg-purple-500' :
-                    'bg-orange-500'
-                  }`}>
-                    {activity.type === 'project' ? 'P' :
-                     activity.type === 'task' ? 'T' :
-                     activity.type === 'calendar' ? 'C' : 'M'}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-900">
-                      <span className="font-medium">{activity.action}</span>
-                      <span className="text-gray-600"> • {activity.target}</span>
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="bg-white rounded-lg border border-gray-100">
-          <div className="p-6 border-b border-gray-100">
-            <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
-          </div>
-          <div className="p-6">
-            <div className="space-y-3">
-              <button className="w-full px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium">
-                Create New Project
-              </button>
-              <button className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-                Add Task
-              </button>
-              <button className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
-                Schedule Meeting
-              </button>
-              <button className="w-full px-4 py-3 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
-                View Reports
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Module Overview */}
-      <div className="mt-8 bg-white rounded-lg border border-gray-100">
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-900">Available Modules</h2>
-        </div>
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {modulesConfig.modules.slice(0, 8).map((module) => (
-              <div key={module.id} className="p-4 border border-gray-100 rounded-lg hover:border-purple-200 hover:shadow-sm transition-all cursor-pointer">
-                <h3 className="font-medium text-gray-900 mb-1">{module.label}</h3>
-                <p className="text-xs text-gray-500 mb-3">{module.description}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-400">{module.pages.length} pages</span>
-                  <div className={`w-2 h-2 rounded-full bg-${module.color}-400`}></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState('/projects');
