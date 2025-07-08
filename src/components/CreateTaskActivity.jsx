@@ -456,61 +456,7 @@ const CreateTaskActivity = ({ isOpen, onClose, initialType = '' }) => {
                     </button>
                   </div>
 
-                  {formData.type === 'activity' && !formData.module && !formData.isPrivate && (
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-4">Activity Type</h3>
-                      <div className="space-y-3">
-                        <button
-                          onClick={handlePrivateToggle}
-                          className="w-full p-4 border-2 border-gray-200 rounded-xl hover:border-gray-400 transition-all text-left group"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                              <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-gray-200">
-                                <Lock className="w-5 h-5 text-gray-600" />
-                              </div>
-                              <div>
-                                <div className="font-medium">Private Activity</div>
-                                <div className="text-sm text-gray-500">Personal appointment (e.g., doctor, gym)</div>
-                              </div>
-                            </div>
-                            <ChevronRight className="w-5 h-5 text-gray-400" />
-                          </div>
-                        </button>
-
-                        <div className="relative">
-                          <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-200"></div>
-                          </div>
-                          <div className="relative flex justify-center text-sm">
-                            <span className="px-3 bg-white text-gray-500">or link to module</span>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3">
-                          {userModules.map(module => {
-                            const IconComponent = module.icon;
-                            return (
-                              <button
-                                key={module.id}
-                                onClick={() => handleModuleChange(module.id)}
-                                className="p-4 border-2 border-gray-200 rounded-xl hover:border-gray-400 transition-all text-left group"
-                              >
-                                <div className="flex items-center space-x-3">
-                                  <div className={`p-2 rounded-lg ${module.color}`}>
-                                    <IconComponent className="w-5 h-5 text-white" />
-                                  </div>
-                                  <div className="font-medium">{module.name}</div>
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {(formData.type === 'task' || formData.isPrivate || formData.module || ['deal', 'contact', 'organization', 'project', 'circle'].includes(formData.type)) && (
+                  {(formData.type === 'task' || formData.type === 'activity' || formData.isPrivate || formData.module || ['deal', 'contact', 'organization', 'project', 'circle'].includes(formData.type)) && (
                     <>
                       {formData.type === 'task' ? (
                         <div className="space-y-4">
