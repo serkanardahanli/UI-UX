@@ -17,7 +17,11 @@ import {
   Settings,
   Plus,
   Lock,
-  ChevronRight
+  ChevronRight,
+  DollarSign,
+  UserPlus,
+  Folder,
+  Globe
 } from 'lucide-react';
 
 const CreateTaskActivity = ({ isOpen, onClose, initialType = '' }) => {
@@ -56,7 +60,7 @@ const CreateTaskActivity = ({ isOpen, onClose, initialType = '' }) => {
         module: '',
         project: null,
         linkedItem: null,
-        isPrivate: initialType === 'activity',
+        isPrivate: false,
         assignedTo: null,
         status: 'todo'
       });
@@ -65,8 +69,7 @@ const CreateTaskActivity = ({ isOpen, onClose, initialType = '' }) => {
 
   const userModules = [
     { id: 'projects', name: 'Project Management', icon: Target, color: 'bg-blue-500' },
-    { id: 'sales', name: 'Sales Tool', icon: ShoppingCart, color: 'bg-green-500' },
-    { id: 'support', name: 'Support Tool', icon: Headphones, color: 'bg-purple-500' }
+    { id: 'sales', name: 'Sales Tool', icon: ShoppingCart, color: 'bg-green-500' }
   ];
 
   const searchData = {
@@ -153,11 +156,11 @@ const CreateTaskActivity = ({ isOpen, onClose, initialType = '' }) => {
   const handleTypeChange = (type) => {
     setFormData(prev => ({
       ...prev,
-      type,
+      type: type === 'private-activity' ? 'activity' : type,
       module: '',
       project: null,
       linkedItem: null,
-      isPrivate: false,
+      isPrivate: type === 'private-activity',
       assignedTo: null,
       status: type === 'task' ? 'todo' : ''
     }));
@@ -227,8 +230,20 @@ const CreateTaskActivity = ({ isOpen, onClose, initialType = '' }) => {
     // Here you would normally save to database
     console.log('Creating:', formData.type, formData);
     
+    const typeNames = {
+      task: 'Task',
+      activity: 'Activity',
+      deal: 'Deal',
+      contact: 'Contact',
+      organization: 'Organization',
+      project: 'Project',
+      circle: 'Circle'
+    };
+    
+    const typeName = typeNames[formData.type] || 'Item';
+    
     // Show success message (you could implement toast notifications)
-    alert(`${formData.type === 'task' ? 'Task' : 'Activity'} "${formData.title}" created successfully!`);
+    alert(`${typeName} "${formData.title}" created successfully!`);
     
     // Close modal
     onClose();
@@ -261,31 +276,121 @@ const CreateTaskActivity = ({ isOpen, onClose, initialType = '' }) => {
                   <h3 className="text-lg font-medium text-gray-900 mb-4">What would you like to create?</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <button
-                      onClick={() => handleTypeChange('task')}
-                      className="p-6 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
+                      onClick={() => handleTypeChange('deal')}
+                      className="p-4 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all group"
+                    >
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="p-3 bg-green-100 rounded-xl group-hover:bg-green-500 transition-colors">
+                          <DollarSign className="w-6 h-6 text-green-600 group-hover:text-white" />
+                        </div>
+                        <div className="text-center">
+                          <div className="font-semibold">Deal</div>
+                          <div className="text-sm text-gray-500 mt-1">Sales opportunity</div>
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => handleTypeChange('contact')}
+                      className="p-4 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
                     >
                       <div className="flex flex-col items-center space-y-3">
                         <div className="p-3 bg-blue-100 rounded-xl group-hover:bg-blue-500 transition-colors">
-                          <FileText className="w-8 h-8 text-blue-600 group-hover:text-white" />
+                          <UserPlus className="w-6 h-6 text-blue-600 group-hover:text-white" />
                         </div>
                         <div className="text-center">
-                          <div className="font-semibold text-lg">Task</div>
-                          <div className="text-sm text-gray-500 mt-1">Work item in a project</div>
+                          <div className="font-semibold">Contact</div>
+                          <div className="text-sm text-gray-500 mt-1">Person or lead</div>
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => handleTypeChange('organization')}
+                      className="p-4 border-2 border-gray-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all group"
+                    >
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="p-3 bg-purple-100 rounded-xl group-hover:bg-purple-500 transition-colors">
+                          <Building className="w-6 h-6 text-purple-600 group-hover:text-white" />
+                        </div>
+                        <div className="text-center">
+                          <div className="font-semibold">Organization</div>
+                          <div className="text-sm text-gray-500 mt-1">Company or client</div>
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => handleTypeChange('project')}
+                      className="p-4 border-2 border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 transition-all group"
+                    >
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="p-3 bg-indigo-100 rounded-xl group-hover:bg-indigo-500 transition-colors">
+                          <Folder className="w-6 h-6 text-indigo-600 group-hover:text-white" />
+                        </div>
+                        <div className="text-center">
+                          <div className="font-semibold">Project</div>
+                          <div className="text-sm text-gray-500 mt-1">Work project</div>
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => handleTypeChange('circle')}
+                      className="p-4 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all group"
+                    >
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="p-3 bg-orange-100 rounded-xl group-hover:bg-orange-500 transition-colors">
+                          <Globe className="w-6 h-6 text-orange-600 group-hover:text-white" />
+                        </div>
+                        <div className="text-center">
+                          <div className="font-semibold">Circle</div>
+                          <div className="text-sm text-gray-500 mt-1">Team or department</div>
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => handleTypeChange('private-activity')}
+                      className="p-4 border-2 border-gray-200 rounded-xl hover:border-gray-500 hover:bg-gray-50 transition-all group"
+                    >
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="p-3 bg-gray-100 rounded-xl group-hover:bg-gray-500 transition-colors">
+                          <Lock className="w-6 h-6 text-gray-600 group-hover:text-white" />
+                        </div>
+                        <div className="text-center">
+                          <div className="font-semibold">Private Activity</div>
+                          <div className="text-sm text-gray-500 mt-1">Personal appointment</div>
                         </div>
                       </div>
                     </button>
 
                     <button
                       onClick={() => handleTypeChange('activity')}
-                      className="p-6 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all group"
+                      className="p-4 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all group"
                     >
                       <div className="flex flex-col items-center space-y-3">
                         <div className="p-3 bg-green-100 rounded-xl group-hover:bg-green-500 transition-colors">
-                          <Calendar className="w-8 h-8 text-green-600 group-hover:text-white" />
+                          <Calendar className="w-6 h-6 text-green-600 group-hover:text-white" />
                         </div>
                         <div className="text-center">
-                          <div className="font-semibold text-lg">Activity</div>
+                          <div className="font-semibold">Activity</div>
                           <div className="text-sm text-gray-500 mt-1">Call, meeting, appointment</div>
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => handleTypeChange('task')}
+                      className="p-4 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
+                    >
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="p-3 bg-blue-100 rounded-xl group-hover:bg-blue-500 transition-colors">
+                          <FileText className="w-6 h-6 text-blue-600 group-hover:text-white" />
+                        </div>
+                        <div className="text-center">
+                          <div className="font-semibold">Task</div>
+                          <div className="text-sm text-gray-500 mt-1">Work item in a project</div>
                         </div>
                       </div>
                     </button>
@@ -302,12 +407,46 @@ const CreateTaskActivity = ({ isOpen, onClose, initialType = '' }) => {
                           <FileText className="w-5 h-5 text-blue-600" />
                           <span className="font-medium">Creating a Task</span>
                         </>
-                      ) : (
+                      ) : formData.type === 'activity' ? (
                         <>
-                          <Calendar className="w-5 h-5 text-green-600" />
-                          <span className="font-medium">Creating an Activity</span>
+                          {formData.isPrivate ? (
+                            <>
+                              <Lock className="w-5 h-5 text-gray-600" />
+                              <span className="font-medium">Creating a Private Activity</span>
+                            </>
+                          ) : (
+                            <>
+                              <Calendar className="w-5 h-5 text-green-600" />
+                              <span className="font-medium">Creating an Activity</span>
+                            </>
+                          )}
                         </>
-                      )}
+                      ) : formData.type === 'deal' ? (
+                        <>
+                          <DollarSign className="w-5 h-5 text-green-600" />
+                          <span className="font-medium">Creating a Deal</span>
+                        </>
+                      ) : formData.type === 'contact' ? (
+                        <>
+                          <UserPlus className="w-5 h-5 text-blue-600" />
+                          <span className="font-medium">Creating a Contact</span>
+                        </>
+                      ) : formData.type === 'organization' ? (
+                        <>
+                          <Building className="w-5 h-5 text-purple-600" />
+                          <span className="font-medium">Creating an Organization</span>
+                        </>
+                      ) : formData.type === 'project' ? (
+                        <>
+                          <Folder className="w-5 h-5 text-indigo-600" />
+                          <span className="font-medium">Creating a Project</span>
+                        </>
+                      ) : formData.type === 'circle' ? (
+                        <>
+                          <Globe className="w-5 h-5 text-orange-600" />
+                          <span className="font-medium">Creating a Circle</span>
+                        </>
+                      ) : null}
                     </div>
                     <button
                       onClick={() => setFormData(prev => ({ ...prev, type: '' }))}
@@ -371,7 +510,7 @@ const CreateTaskActivity = ({ isOpen, onClose, initialType = '' }) => {
                     </div>
                   )}
 
-                  {(formData.type === 'task' || formData.isPrivate || formData.module) && (
+                  {(formData.type === 'task' || formData.isPrivate || formData.module || ['deal', 'contact', 'organization', 'project', 'circle'].includes(formData.type)) && (
                     <>
                       {formData.type === 'task' ? (
                         <div className="space-y-4">
@@ -397,7 +536,7 @@ const CreateTaskActivity = ({ isOpen, onClose, initialType = '' }) => {
                             />
                           </div>
                         </div>
-                      ) : (
+                      ) : formData.type === 'activity' ? (
                         <div className="space-y-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
@@ -405,7 +544,7 @@ const CreateTaskActivity = ({ isOpen, onClose, initialType = '' }) => {
                               type="text"
                               value={formData.title}
                               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                               placeholder={
                                 formData.isPrivate 
                                   ? 'e.g. Doctor appointment'
@@ -420,8 +559,50 @@ const CreateTaskActivity = ({ isOpen, onClose, initialType = '' }) => {
                               value={formData.description}
                               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                               rows="3"
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                               placeholder="Add more details..."
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              {formData.type === 'deal' ? 'Deal Name' :
+                               formData.type === 'contact' ? 'Contact Name' :
+                               formData.type === 'organization' ? 'Organization Name' :
+                               formData.type === 'project' ? 'Project Name' :
+                               formData.type === 'circle' ? 'Circle Name' : 'Name'} *
+                            </label>
+                            <input
+                              type="text"
+                              value={formData.title}
+                              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                              placeholder={
+                                formData.type === 'deal' ? 'e.g. ACME Corp - Enterprise License' :
+                                formData.type === 'contact' ? 'e.g. John Doe' :
+                                formData.type === 'organization' ? 'e.g. ACME Corporation' :
+                                formData.type === 'project' ? 'e.g. Website Redesign' :
+                                formData.type === 'circle' ? 'e.g. Development Team' : 'Enter name...'
+                              }
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Description <span className="text-gray-400">(Optional)</span></label>
+                            <textarea
+                              value={formData.description}
+                              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                              rows="3"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                              placeholder={
+                                formData.type === 'deal' ? 'Add deal details, value, probability...' :
+                                formData.type === 'contact' ? 'Add contact details, role, company...' :
+                                formData.type === 'organization' ? 'Add organization details, industry, size...' :
+                                formData.type === 'project' ? 'Add project goals, timeline, requirements...' :
+                                formData.type === 'circle' ? 'Add team description, responsibilities...' : 'Add details...'
+                              }
                             />
                           </div>
                         </div>
