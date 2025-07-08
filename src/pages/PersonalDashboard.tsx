@@ -1,257 +1,583 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Calendar, Folder, CreditCard, Users, Check, Clock } from 'lucide-react';
+import { 
+  Search, 
+  Phone, 
+  Users, 
+  Mail, 
+  CheckCircle, 
+  AlertCircle, 
+  Clock, 
+  Star, 
+  DollarSign, 
+  TrendingUp, 
+  TrendingDown,
+  Plus,
+  RefreshCw,
+  FileText,
+  Target,
+  Heart,
+  Package,
+  Home
+} from 'lucide-react';
 
 interface PersonalDashboardProps {
   setCurrentView?: (view: string) => void;
 }
 
+type PeriodType = 'today' | 'week' | 'month' | 'quarter';
+type TabType = 0 | 1 | 2 | 3;
+
 export default function PersonalDashboard({ setCurrentView }: PersonalDashboardProps) {
-  const [showQuickAddMenu, setShowQuickAddMenu] = useState(false);
-  const [currentDate, setCurrentDate] = useState('');
+  const [activePeriod, setActivePeriod] = useState<PeriodType>('today');
+  const [activeTab, setActiveTab] = useState<TabType>(0);
+  const [noteText, setNoteText] = useState('');
+  const [reminderDate, setReminderDate] = useState('');
+  const [savedNotes, setSavedNotes] = useState([
+    {
+      id: 1,
+      text: 'Call supplier about delayed shipment',
+      timestamp: 'Today at 9:15 AM',
+      reminder: 'Tomorrow'
+    },
+    {
+      id: 2,
+      text: 'Review Q3 budget proposal before meeting',
+      timestamp: 'Yesterday at 4:30 PM',
+      reminder: null
+    }
+  ]);
 
-  useEffect(() => {
-    const today = new Date();
-    const options: Intl.DateTimeFormatOptions = { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    };
-    setCurrentDate(today.toLocaleDateString('nl-NL', options));
-  }, []);
-
-  const handleQuickAddClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setShowQuickAddMenu(!showQuickAddMenu);
+  const periodLabels = {
+    today: {
+      revenue: '€84.2k',
+      newCustomers: 37,
+      openDeals: 156,
+      quotes: 42,
+      conversion: '24.8%',
+      winRate: '72%'
+    },
+    week: {
+      revenue: '€387.5k',
+      newCustomers: 142,
+      openDeals: 156,
+      quotes: 186,
+      conversion: '26.1%',
+      winRate: '68%'
+    },
+    month: {
+      revenue: '€1.45M',
+      newCustomers: 521,
+      openDeals: 156,
+      quotes: 734,
+      conversion: '22.4%',
+      winRate: '74%'
+    },
+    quarter: {
+      revenue: '€4.12M',
+      newCustomers: 1547,
+      openDeals: 156,
+      quotes: 2104,
+      conversion: '28.9%',
+      winRate: '71%'
+    }
   };
 
-  const handleDocumentClick = () => {
-    setShowQuickAddMenu(false);
+  const activities = [
+    {
+      id: 1,
+      icon: Phone,
+      title: 'Call Customer Y',
+      meta: ['Follow up on proposal', 'High Priority'],
+      time: '10:00 AM',
+      iconBg: 'bg-blue-100',
+      iconColor: 'text-blue-600'
+    },
+    {
+      id: 2,
+      icon: Users,
+      title: 'Meeting with Customer Y',
+      meta: ['Project kickoff', 'Conference Room A'],
+      time: '2:30 PM',
+      iconBg: 'bg-pink-100',
+      iconColor: 'text-pink-600'
+    },
+    {
+      id: 3,
+      icon: Mail,
+      title: 'Send proposal to ABC Corp',
+      meta: ['Updated pricing', 'Deal #1234'],
+      time: '4:00 PM',
+      iconBg: 'bg-indigo-100',
+      iconColor: 'text-indigo-600'
+    },
+    {
+      id: 4,
+      icon: CheckCircle,
+      title: 'Complete project milestone',
+      meta: ['Website Redesign', 'Phase 2'],
+      time: '5:00 PM',
+      iconBg: 'bg-green-100',
+      iconColor: 'text-green-600'
+    },
+    {
+      id: 5,
+      icon: DollarSign,
+      title: 'Review budget allocation',
+      meta: ['Q3 Planning', 'Finance Team'],
+      time: '5:30 PM',
+      iconBg: 'bg-yellow-100',
+      iconColor: 'text-yellow-600'
+    }
+  ];
+
+  const tasks = [
+    {
+      id: 1,
+      icon: AlertCircle,
+      title: 'Update project documentation',
+      meta: ['Overdue by 2 days', 'High Priority'],
+      time: 'Due: Jul 6',
+      iconBg: 'bg-red-100',
+      iconColor: 'text-red-600'
+    },
+    {
+      id: 2,
+      icon: Star,
+      title: 'Review code changes',
+      meta: ['Pull request #234', 'Medium Priority'],
+      time: 'Due: Today',
+      iconBg: 'bg-yellow-100',
+      iconColor: 'text-yellow-600'
+    },
+    {
+      id: 3,
+      icon: FileText,
+      title: 'Prepare monthly report',
+      meta: ['Marketing Dashboard', 'Low Priority'],
+      time: 'Due: Jul 15',
+      iconBg: 'bg-blue-100',
+      iconColor: 'text-blue-600'
+    }
+  ];
+
+  const deals = [
+    {
+      id: 1,
+      icon: Clock,
+      title: 'ABC Corp - Enterprise License',
+      meta: ['€125,000', 'Closing Today'],
+      time: '90% probability',
+      iconBg: 'bg-green-100',
+      iconColor: 'text-green-600'
+    },
+    {
+      id: 2,
+      icon: Heart,
+      title: 'TechStart Inc - SaaS Package',
+      meta: ['€45,000', 'Negotiation'],
+      time: '65% probability',
+      iconBg: 'bg-yellow-100',
+      iconColor: 'text-yellow-600'
+    },
+    {
+      id: 3,
+      icon: Package,
+      title: 'Global Systems - Pilot Project',
+      meta: ['€15,000', 'Proposal Sent'],
+      time: '40% probability',
+      iconBg: 'bg-indigo-100',
+      iconColor: 'text-indigo-600'
+    }
+  ];
+
+  const saveNote = () => {
+    if (noteText.trim()) {
+      const now = new Date();
+      const timestamp = `Today at ${now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+      
+      let reminderText = null;
+      if (reminderDate) {
+        const reminder = new Date(reminderDate);
+        const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+        reminderText = reminder.toLocaleDateString('en-US', options);
+      }
+
+      const newNote = {
+        id: Date.now(),
+        text: noteText,
+        timestamp,
+        reminder: reminderText
+      };
+
+      setSavedNotes([newNote, ...savedNotes]);
+      setNoteText('');
+      setReminderDate('');
+    }
   };
 
-  useEffect(() => {
-    document.addEventListener('click', handleDocumentClick);
-    return () => document.removeEventListener('click', handleDocumentClick);
-  }, []);
-
-  const renderCalendar = () => {
-    const now = new Date();
-    const month = now.getMonth();
-    const year = now.getFullYear();
-    const todayDate = now.getDate();
-
-    const monthNames = ["Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December"];
-    
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    
-    // Adjust for Monday start
-    const offset = (firstDay === 0) ? 6 : firstDay - 1;
-
-    const calendarDays = [];
-    
-    // Empty cells for days before the first day of the month
-    for(let i = 0; i < offset; i++) {
-      calendarDays.push(<div key={`empty-${i}`}></div>);
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 0:
+        return (
+          <div>
+            {activities.map((activity) => (
+              <div key={activity.id} className="flex items-center p-4 border border-gray-200 rounded-lg mb-3 hover:border-purple-500 hover:bg-gray-50 cursor-pointer transition-all">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${activity.iconBg}`}>
+                  <activity.icon className={`w-5 h-5 ${activity.iconColor}`} />
+                </div>
+                <div className="flex-1">
+                  <div className="font-medium text-sm mb-1">{activity.title}</div>
+                  <div className="text-xs text-gray-500 flex gap-4">
+                    {activity.meta.map((item, index) => (
+                      <span key={index}>{item}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="text-sm text-gray-500 ml-auto">{activity.time}</div>
+              </div>
+            ))}
+            <div className="text-center py-5 text-gray-500 text-sm border-t border-gray-200 mt-5">
+              Showing 6 of 12 activities for today • <a href="#" className="text-purple-600 hover:text-purple-700">View all</a>
+            </div>
+          </div>
+        );
+      case 1:
+        return (
+          <div>
+            {tasks.map((task) => (
+              <div key={task.id} className="flex items-center p-4 border border-gray-200 rounded-lg mb-3 hover:border-purple-500 hover:bg-gray-50 cursor-pointer transition-all">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${task.iconBg}`}>
+                  <task.icon className={`w-5 h-5 ${task.iconColor}`} />
+                </div>
+                <div className="flex-1">
+                  <div className="font-medium text-sm mb-1">{task.title}</div>
+                  <div className="text-xs text-gray-500 flex gap-4">
+                    {task.meta.map((item, index) => (
+                      <span key={index}>{item}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="text-sm text-gray-500 ml-auto">{task.time}</div>
+              </div>
+            ))}
+            <div className="text-center py-5 text-gray-500 text-sm border-t border-gray-200 mt-5">
+              Showing 3 of 12 tasks • 5 overdue
+            </div>
+          </div>
+        );
+      case 2:
+        return (
+          <div className="text-center py-20 text-gray-500">
+            <Target className="w-12 h-12 mx-auto mb-4 opacity-30" />
+            <p>No active projects</p>
+          </div>
+        );
+      case 3:
+        return (
+          <div>
+            {deals.map((deal) => (
+              <div key={deal.id} className="flex items-center p-4 border border-gray-200 rounded-lg mb-3 hover:border-purple-500 hover:bg-gray-50 cursor-pointer transition-all">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${deal.iconBg}`}>
+                  <deal.icon className={`w-5 h-5 ${deal.iconColor}`} />
+                </div>
+                <div className="flex-1">
+                  <div className="font-medium text-sm mb-1">{deal.title}</div>
+                  <div className="text-xs text-gray-500 flex gap-4">
+                    {deal.meta.map((item, index) => (
+                      <span key={index}>{item}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="text-sm text-gray-500 ml-auto">{deal.time}</div>
+              </div>
+            ))}
+            <div className="text-center py-5 text-gray-500 text-sm border-t border-gray-200 mt-5">
+              Total pipeline value: €185,000 • Average close rate: 65%
+            </div>
+          </div>
+        );
+      default:
+        return null;
     }
-
-    // Days of the month
-    for(let day = 1; day <= daysInMonth; day++) {
-      const isToday = day === todayDate;
-      calendarDays.push(
-        <div
-          key={day}
-          className={`h-8 flex items-center justify-center rounded-full cursor-pointer ${
-            isToday 
-              ? 'bg-indigo-600 text-white font-bold' 
-              : 'hover:bg-slate-100'
-          }`}
-        >
-          {day}
-        </div>
-      );
-    }
-
-    return (
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <h4 className="font-bold">{monthNames[month]} {year}</h4>
-        </div>
-        <div className="grid grid-cols-7 gap-2 text-center text-xs text-slate-500 font-semibold">
-          <div>Ma</div>
-          <div>Di</div>
-          <div>Wo</div>
-          <div>Do</div>
-          <div>Vr</div>
-          <div>Za</div>
-          <div>Zo</div>
-        </div>
-        <div className="grid grid-cols-7 gap-2 mt-2 text-center text-sm">
-          {calendarDays}
-        </div>
-      </div>
-    );
   };
 
   return (
-    <div className="text-slate-800 bg-gray-50 min-h-screen">
-      <div className="p-4 sm:p-6 lg:p-8">
+    <div className="bg-gray-50 min-h-screen">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-5 max-w-[1600px] mx-auto p-5">
+        
         {/* Header */}
-        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Goedemorgen, Serkan</h1>
-            <p className="text-slate-500 mt-1">{currentDate}</p>
+        <header className="lg:col-span-2 flex flex-col lg:flex-row justify-between items-start lg:items-center mb-3">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6 mb-4 lg:mb-0">
+            <div className="flex items-center gap-2 text-2xl font-bold text-purple-600">
+              <Home className="w-8 h-8" />
+              FlowQi
+            </div>
+            
+            <nav className="flex gap-2">
+              <button className="px-4 py-2 border border-transparent rounded-lg bg-purple-600 text-white text-sm">
+                Dashboard
+              </button>
+              <button 
+                onClick={() => setCurrentView && setCurrentView('/inbox')}
+                className="px-4 py-2 border border-transparent rounded-lg bg-transparent text-gray-600 hover:bg-white hover:border-gray-200 hover:text-gray-900 text-sm transition-all"
+              >
+                CRM
+              </button>
+              <button 
+                onClick={() => setCurrentView && setCurrentView('/sales/list')}
+                className="px-4 py-2 border border-transparent rounded-lg bg-transparent text-gray-600 hover:bg-white hover:border-gray-200 hover:text-gray-900 text-sm transition-all"
+              >
+                Sales Tool
+              </button>
+              <button 
+                onClick={() => setCurrentView && setCurrentView('/projects')}
+                className="px-4 py-2 border border-transparent rounded-lg bg-transparent text-gray-600 hover:bg-white hover:border-gray-200 hover:text-gray-900 text-sm transition-all"
+              >
+                Project Management
+              </button>
+            </nav>
           </div>
-          <div className="relative mt-4 sm:mt-0">
-            <button 
-              onClick={handleQuickAddClick}
-              className="bg-indigo-600 text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm hover:bg-indigo-700 transition-colors flex items-center gap-2"
-            >
-              <Plus className="w-5 h-5" />
-              Aanmaken
-            </button>
-            {showQuickAddMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-1 z-10">
-                <a href="#" className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
-                  Taak
-                </a>
-                <a href="#" className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
-                  Contactpersoon
-                </a>
-                <a href="#" className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
-                  Deal
-                </a>
+          
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input 
+                type="text" 
+                placeholder="Search..." 
+                className="pl-9 pr-4 py-2 border border-gray-200 rounded-[20px] w-[250px] text-sm bg-white"
+              />
+            </div>
+            
+            <div className="flex items-center gap-3 py-1 px-4 rounded-3xl bg-white border border-gray-200 cursor-pointer">
+              <span className="text-sm">John Doe</span>
+              <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-medium text-sm">
+                JD
               </div>
-            )}
+            </div>
           </div>
         </header>
 
-        {/* Dashboard Grid */}
-        <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Content */}
+        <main className="bg-white rounded-xl shadow-sm flex flex-col overflow-hidden">
           
-          {/* Main Column */}
-          <div className="lg:col-span-2 space-y-8">
-            
-            {/* Quick Navigation Modules */}
-            <section>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <button 
-                  onClick={() => setCurrentView && setCurrentView('/projects')}
-                  className="group bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 bg-indigo-50 border-indigo-200 text-left"
-                >
-                  <div className="bg-indigo-200 text-indigo-700 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                    <Folder className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-bold text-lg text-slate-900">Project Management</h3>
-                  <p className="text-sm text-indigo-800/70 mt-2">Open je projecten en taken</p>
-                </button>
-                
-                <button 
-                  onClick={() => setCurrentView && setCurrentView('/sales/list')}
-                  className="group bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 bg-teal-50 border-teal-200 text-left"
-                >
-                  <div className="bg-teal-200 text-teal-700 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                    <CreditCard className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-bold text-lg text-slate-900">Sales Tool</h3>
-                  <p className="text-sm text-teal-800/70 mt-2">Beheer je deals en pipeline</p>
-                </button>
-                
-                <button 
-                  onClick={() => setCurrentView && setCurrentView('/inbox')}
-                  className="group bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 bg-amber-50 border-amber-200 text-left"
-                >
-                  <div className="bg-amber-200 text-amber-700 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                    <Users className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-bold text-lg text-slate-900">CRM</h3>
-                  <p className="text-sm text-amber-800/70 mt-2">Vind je contacten en bedrijven</p>
-                </button>
-              </div>
-            </section>
-
-            {/* My Day Widget */}
-            <section className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="font-bold text-lg text-slate-900 mb-4">Mijn Dag</h3>
-              <div className="space-y-4">
-                {/* Task Item */}
-                <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-50">
-                  <input 
-                    type="checkbox" 
-                    className="h-5 w-5 rounded-full border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <div className="flex-grow">
-                    <p className="font-medium">Design system components update afronden</p>
-                    <p className="text-sm text-slate-500">Project: Website Redesign</p>
-                  </div>
-                  <span className="text-sm font-semibold text-red-600">Vandaag</span>
-                </div>
-                
-                {/* Calendar Item */}
-                <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-50">
-                  <div className="w-5 h-5 flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-slate-400" />
-                  </div>
-                  <div className="flex-grow">
-                    <p className="font-medium">Sync met Clif over Q3 planning</p>
-                    <p className="text-sm text-slate-500">FlowQi GmbH</p>
-                  </div>
-                  <span className="text-sm font-semibold text-slate-600">11:00</span>
-                </div>
-                
-                {/* Task Item */}
-                <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-50">
-                  <input 
-                    type="checkbox" 
-                    className="h-5 w-5 rounded-full border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <div className="flex-grow">
-                    <p className="font-medium">Voorstel voor nieuwe klant uitwerken</p>
-                    <p className="text-sm text-slate-500">Deal: Innovate Inc.</p>
-                  </div>
-                </div>
-              </div>
-            </section>
+          {/* Content Header */}
+          <div className="p-6 bg-gradient-to-r from-purple-600 to-purple-400 text-white">
+            <h1 className="text-3xl font-semibold mb-2">Good Morning, John!</h1>
+            <p className="opacity-90">Tuesday, July 8, 2025</p>
           </div>
 
-          {/* Sidebar */}
-          <aside className="space-y-8">
-            {/* Calendar Widget */}
-            <section className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-              {renderCalendar()}
-            </section>
-
-            {/* Recent Activity Widget */}
-            <section className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="font-bold text-lg text-slate-900 mb-4">Recente Activiteit</h3>
-              <div className="space-y-4 text-sm">
-                <div className="flex gap-3">
-                  <div className="w-8 h-8 bg-green-400 rounded-full flex items-center justify-center text-white font-medium text-sm">
-                    C
-                  </div>
-                  <div>
-                    <p>
-                      <span className="font-semibold">Clif</span> heeft de status van 'Design afronden' gewijzigd naar{' '}
-                      <span className="font-semibold text-green-600">Voltooid</span>.
-                    </p>
-                    <p className="text-xs text-slate-400">15 minuten geleden</p>
-                  </div>
+          {/* Period Filter and Stats */}
+          <div className="p-4 lg:p-6 border-b border-gray-200 bg-gray-50">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-3">
+              <div className="flex items-center gap-6 mb-4 lg:mb-0">
+                <h3 className="text-base font-semibold">Overview</h3>
+                <div className="flex bg-gray-200 rounded-lg p-0.5">
+                  {(['today', 'week', 'month', 'quarter'] as PeriodType[]).map((period) => (
+                    <button
+                      key={period}
+                      onClick={() => setActivePeriod(period)}
+                      className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all whitespace-nowrap ${
+                        activePeriod === period
+                          ? 'bg-white text-purple-600 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      {period === 'today' ? 'Today' : 
+                       period === 'week' ? 'This Week' : 
+                       period === 'month' ? 'This Month' : 'This Quarter'}
+                    </button>
+                  ))}
                 </div>
-                <div className="flex gap-3">
-                  <div className="w-8 h-8 bg-pink-400 rounded-full flex items-center justify-center text-white font-medium text-sm">
-                    L
-                  </div>
-                  <div>
-                    <p>
-                      <span className="font-semibold">Laura</span> heeft je genoemd in een opmerking bij de taak 'Nieuwe Ad Copy'.
-                    </p>
-                    <p className="text-xs text-slate-400">1 uur geleden</p>
+              </div>
+              <button className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 text-white rounded-md text-xs cursor-pointer hover:bg-purple-700 transition-colors">
+                <Plus className="w-3.5 h-3.5" />
+                New Quote
+              </button>
+            </div>
+            
+            {/* Compact Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="text-center">
+                <div className="text-xl font-bold text-purple-600">{periodLabels[activePeriod].revenue}</div>
+                <div className="text-xs text-gray-600">Revenue</div>
+                <div className="text-xs text-green-600 flex items-center justify-center gap-1">
+                  <TrendingUp className="w-3 h-3" />
+                  12%
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl font-bold">{periodLabels[activePeriod].newCustomers}</div>
+                <div className="text-xs text-gray-600">New Customers</div>
+                <div className="text-xs text-green-600 flex items-center justify-center gap-1">
+                  <TrendingUp className="w-3 h-3" />
+                  24%
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl font-bold">{periodLabels[activePeriod].openDeals}</div>
+                <div className="text-xs text-gray-600">Open Deals</div>
+                <div className="text-xs text-red-600 flex items-center justify-center gap-1">
+                  <TrendingDown className="w-3 h-3" />
+                  8%
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl font-bold">{periodLabels[activePeriod].quotes}</div>
+                <div className="text-xs text-gray-600">Quotes Sent</div>
+                <div className="text-xs text-green-600 flex items-center justify-center gap-1">
+                  <TrendingUp className="w-3 h-3" />
+                  18%
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl font-bold">{periodLabels[activePeriod].conversion}</div>
+                <div className="text-xs text-gray-600">Conversion</div>
+                <div className="text-xs text-green-600 flex items-center justify-center gap-1">
+                  <TrendingUp className="w-3 h-3" />
+                  3.2%
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl font-bold">{periodLabels[activePeriod].winRate}</div>
+                <div className="text-xs text-gray-600">Win Rate</div>
+                <div className="text-xs text-green-600 flex items-center justify-center gap-1">
+                  <TrendingUp className="w-3 h-3" />
+                  5%
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Tabs Section */}
+          <div className="flex-1 flex flex-col px-6">
+            <div className="flex gap-6 border-b border-gray-200 mb-6">
+              {['My Activities', 'My Tasks', 'My Projects', 'My Deals'].map((tab, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveTab(index as TabType)}
+                  className={`py-3 text-sm relative transition-colors ${
+                    activeTab === index
+                      ? 'text-purple-600 font-medium'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {tab}
+                  {activeTab === index && (
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600"></div>
+                  )}
+                </button>
+              ))}
+            </div>
+            
+            <div className="flex-1 overflow-y-auto pb-6">
+              {renderTabContent()}
+            </div>
+          </div>
+        </main>
+
+        {/* Sidebar */}
+        <aside className="flex flex-col gap-5">
+          {/* Today's Overview Widget */}
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-base font-semibold">Today's Overview</h3>
+            </div>
+            
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-3 gap-3 pb-4 border-b border-gray-200">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-600">12</div>
+                  <div className="text-xs text-gray-600">Tasks Today</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">3</div>
+                  <div className="text-xs text-gray-600">Meetings</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">5</div>
+                  <div className="text-xs text-gray-600">Open Deals</div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="text-xs text-gray-600 mb-1">Tasks Overdue</div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-semibold text-red-600">5</span>
+                  <span className="text-xs text-gray-600">need attention</span>
+                </div>
+              </div>
+              
+              <div>
+                <div className="text-xs text-gray-600 mb-1">Due This Period</div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-semibold text-yellow-600">18</span>
+                  <span className="text-xs text-gray-600">upcoming deadlines</span>
+                </div>
+              </div>
+              
+              <div>
+                <div className="text-xs text-gray-600 mb-1">Deals Closing Soon</div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-semibold text-green-600">3</span>
+                  <span className="text-xs text-gray-600">worth €45,000</span>
+                </div>
+              </div>
+              
+              <div className="border-t border-gray-200 pt-4">
+                <div className="text-xs text-gray-600 mb-2">Win Rate This Period</div>
+                <div className="flex items-center gap-3">
+                  <div className="text-3xl font-bold text-purple-600">72%</div>
+                  <div className="flex-1">
+                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="w-[72%] h-full bg-purple-600 rounded-full transition-all duration-300"></div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </section>
-          </aside>
-        </main>
+            </div>
+          </div>
+
+          {/* Quick Notes Widget */}
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-base font-semibold">Quick Notes</h3>
+            </div>
+            
+            <textarea
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              className="w-full min-h-[80px] p-2.5 border border-gray-200 rounded-lg text-xs resize-none focus:border-purple-500 focus:outline-none"
+              placeholder="Type your note here..."
+            />
+            
+            <div className="flex justify-between mt-2.5">
+              <input
+                type="date"
+                value={reminderDate}
+                onChange={(e) => setReminderDate(e.target.value)}
+                className="px-2.5 py-1.5 border border-gray-200 rounded-md text-xs"
+              />
+              <button
+                onClick={saveNote}
+                className="px-3.5 py-1.5 bg-purple-600 text-white rounded-md text-xs hover:bg-purple-700 transition-colors"
+              >
+                Save Note
+              </button>
+            </div>
+            
+            <div className="mt-3 max-h-40 overflow-y-auto">
+              {savedNotes.map((note) => (
+                <div key={note.id} className="p-2.5 rounded-md bg-gray-50 mb-2 text-xs">
+                  <div>{note.text}</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {note.timestamp}
+                    {note.reminder && ` • Reminder: ${note.reminder}`}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   );
