@@ -50,6 +50,9 @@ export const lazyComponents = {
   ProjectOverview: createLazyComponent(() => 
     import('../pages/ProjectOverview')
   ),
+  ProjectInsights: createLazyComponent(() => 
+    import('../pages/ProjectInsights')
+  ),
   TaskBoardView: createLazyComponent(() => 
     import('../pages/TaskBoardView')
   ),

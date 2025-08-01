@@ -65,6 +65,12 @@
           "label": "Subtask Manager",
           "component": "SubtaakPage",
           "roles": ["admin", "manager"]
+        },
+        {
+          "path": "/projects/insights",
+          "label": "Project Insights",
+          "component": "ProjectInsights",
+          "roles": ["admin", "manager", "user"]
         }
       ]
     },

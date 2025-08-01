@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Share2, MoreHorizontal, Users, Activity, Calendar, Clock, AlertTriangle, TrendingUp, Star, Plus, Edit3, CheckCircle2, Circle, AlertCircle, Timer, BarChart3, PieChart, Target, Zap, MessageSquare, Paperclip, Flag, ChevronDown, X } from 'lucide-react';
+import { ArrowLeft, Share2, MoreHorizontal, Users, Activity, Calendar, Clock, AlertTriangle, TrendingUp, Star, Plus, Edit3, CheckCircle2, Circle, AlertCircle, Timer, BarChart3, PieChart, Target, Zap, MessageSquare, Paperclip, Flag, ChevronDown, X, FileText, Link } from 'lucide-react';
 import CreateTaskActivity from '../components/CreateTaskActivity';
 
 interface ProjectOverviewProps {
@@ -590,6 +590,48 @@ export default function ProjectOverview({ setCurrentView }: ProjectOverviewProps
                 <Plus className="w-4 h-4" />
                 Add Milestone
               </button>
+            </div>
+
+            {/* Key Resources */}
+            <div className="bg-white rounded-xl p-5 border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-medium text-gray-900">Key resources</h3>
+                <button className="text-gray-400 hover:text-gray-600">
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+              </div>
+              
+              <div className="text-center py-6 px-4">
+                <p className="text-sm text-gray-600 leading-relaxed mb-6">
+                  Align your team around a shared vision with a project brief and supporting resources.
+                </p>
+                
+                <div className="space-y-3">
+                  <button 
+                    className={`w-full px-4 py-3 text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-colors ${
+                      projectStatus === 'Completed' 
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200' 
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    }`}
+                    disabled={projectStatus === 'Completed'}
+                  >
+                    <FileText className="w-4 h-4" />
+                    Create project brief
+                  </button>
+                  
+                  <button 
+                    className={`w-full px-4 py-3 text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-colors ${
+                      projectStatus === 'Completed' 
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200' 
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    }`}
+                    disabled={projectStatus === 'Completed'}
+                  >
+                    <Link className="w-4 h-4" />
+                    Add links & files
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

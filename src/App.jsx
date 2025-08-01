@@ -18,6 +18,7 @@ import HummyAgent from './components/HummyAgent';
 import CancelSubscriptionFlow from './pages/CancelSubscriptionFlow';
 import AddProducts from './pages/AddProducts';
 import AddPaymentMethod from './pages/AddPaymentMethod';
+import ProjectInsights from './pages/ProjectInsights';
 import ModuleManager from './components/ModuleManager';
 import modulesConfig from './config/modules.json';
 import PipelineSettings from './pages/PipelineSettings';
@@ -63,6 +64,7 @@ const SystemSettings = () => (
 // Component mapping for dynamic routing
 const componentMap = {
   ProjectOverview,
+  ProjectInsights,
   InboxDashboard,
   TaskDashboard,
   SubtaakPage,
