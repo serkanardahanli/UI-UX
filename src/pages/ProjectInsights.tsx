@@ -230,7 +230,7 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
     plugins: {
       legend: {
         labels: {
-          color: '#f9fafb'
+          color: '#374151'
         }
       }
     },
@@ -238,10 +238,10 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
       y: {
         beginAtZero: true,
         grid: {
-          color: '#374151'
+          color: '#e5e7eb'
         },
         ticks: {
-          color: '#9ca3af'
+          color: '#6b7280'
         }
       },
       x: {
@@ -249,7 +249,7 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
           display: false
         },
         ticks: {
-          color: '#9ca3af'
+          color: '#6b7280'
         }
       }
     }
@@ -262,7 +262,7 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
     plugins: {
       legend: {
         labels: {
-          color: '#f9fafb'
+          color: '#374151'
         }
       }
     }
@@ -274,7 +274,7 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
     plugins: {
       legend: {
         labels: {
-          color: '#f9fafb'
+          color: '#374151'
         }
       }
     },
@@ -282,44 +282,44 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
       y: {
         beginAtZero: true,
         grid: {
-          color: '#374151'
+          color: '#e5e7eb'
         },
         ticks: {
-          color: '#9ca3af'
+          color: '#6b7280'
         }
       },
       x: {
         grid: {
-          color: '#374151'
+          color: '#e5e7eb'
         },
         ticks: {
-          color: '#9ca3af'
+          color: '#6b7280'
         }
       }
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-50">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700">
+      <div className="bg-white border-b border-gray-200">
         <div className="px-6 py-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex items-center gap-4">
               <button 
                 onClick={() => setCurrentView && setCurrentView('dashboard')}
-                className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <ArrowLeft className="w-5 h-5 text-gray-400" />
+                <ArrowLeft className="w-5 h-5 text-gray-600" />
               </button>
-              <h1 className="text-3xl font-bold text-white">Project Insights</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Project Insights</h1>
             </div>
             
             <div className="flex items-center gap-2 flex-wrap">
               <select 
                 value={selectedProject}
                 onChange={(e) => setSelectedProject(e.target.value)}
-                className="bg-gray-700 text-white border-gray-600 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 text-sm px-3 py-2"
+                className="bg-white text-gray-900 border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 text-sm px-3 py-2"
               >
                 <option value="all">All Projects</option>
                 {projects.map(project => (
@@ -330,7 +330,7 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
               <select 
                 value={selectedTeam}
                 onChange={(e) => setSelectedTeam(e.target.value)}
-                className="bg-gray-700 text-white border-gray-600 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 text-sm px-3 py-2"
+                className="bg-white text-gray-900 border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 text-sm px-3 py-2"
               >
                 <option value="all">All Teams</option>
                 {teams.map(team => (
@@ -341,7 +341,7 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
               <select 
                 value={selectedUser}
                 onChange={(e) => setSelectedUser(e.target.value)}
-                className="bg-gray-700 text-white border-gray-600 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 text-sm px-3 py-2"
+                className="bg-white text-gray-900 border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 text-sm px-3 py-2"
               >
                 <option value="all">All Users</option>
                 {users.map(user => (
@@ -352,7 +352,7 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
               <select 
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="bg-gray-700 text-white border-gray-600 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 text-sm px-3 py-2"
+                className="bg-white text-gray-900 border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 text-sm px-3 py-2"
               >
                 <option value="all">All Statuses</option>
                 {statuses.map(status => (
@@ -367,12 +367,12 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
                   setSelectedUser('all');
                   setSelectedStatus('all');
                 }}
-                className="text-sm font-semibold text-gray-300 hover:text-white p-2 rounded-md hover:bg-gray-700 transition-colors"
+                className="text-sm font-semibold text-gray-600 hover:text-gray-900 p-2 rounded-md hover:bg-gray-100 transition-colors"
               >
                 Reset Filters
               </button>
               
-              <button className="text-sm font-semibold text-gray-300 hover:text-white p-2 rounded-md hover:bg-gray-700 transition-colors flex items-center gap-2">
+              <button className="text-sm font-semibold text-gray-600 hover:text-gray-900 p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center gap-2">
                 <Download className="w-4 h-4" />
                 Export
               </button>
@@ -385,40 +385,40 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
       <div className="p-4 sm:p-6 lg:p-8 max-w-screen-2xl mx-auto">
         {/* KPI Widgets */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <h3 className="text-sm font-medium text-gray-400 mb-2">Total completed tasks</h3>
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <h3 className="text-sm font-medium text-gray-600 mb-2">Total completed tasks</h3>
             <div className="flex items-end justify-between">
-              <span className="text-3xl font-bold text-white">{completedTasks}</span>
+              <span className="text-3xl font-bold text-gray-900">{completedTasks}</span>
             </div>
             <div className="text-xs text-gray-500 mt-2">
               {getActiveFiltersCount() > 0 ? `= ${getActiveFiltersCount()} Filter${getActiveFiltersCount() > 1 ? 's' : ''}` : '= No Filters'}
             </div>
           </div>
           
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <h3 className="text-sm font-medium text-gray-400 mb-2">Total incomplete tasks</h3>
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <h3 className="text-sm font-medium text-gray-600 mb-2">Total incomplete tasks</h3>
             <div className="flex items-end justify-between">
-              <span className="text-3xl font-bold text-white">{filteredTasks.length - completedTasks - closedTasks}</span>
+              <span className="text-3xl font-bold text-gray-900">{filteredTasks.length - completedTasks - closedTasks}</span>
             </div>
             <div className="text-xs text-gray-500 mt-2">
               {getActiveFiltersCount() > 0 ? `= ${getActiveFiltersCount()} Filter${getActiveFiltersCount() > 1 ? 's' : ''}` : '= No Filters'}
             </div>
           </div>
           
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <h3 className="text-sm font-medium text-gray-400 mb-2">Total overdue tasks</h3>
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <h3 className="text-sm font-medium text-gray-600 mb-2">Total overdue tasks</h3>
             <div className="flex items-end justify-between">
-              <span className="text-3xl font-bold text-white">{overdueTasks}</span>
+              <span className="text-3xl font-bold text-gray-900">{overdueTasks}</span>
             </div>
             <div className="text-xs text-gray-500 mt-2">
               {getActiveFiltersCount() > 0 ? `= ${getActiveFiltersCount()} Filter${getActiveFiltersCount() > 1 ? 's' : ''}` : '= No Filters'}
             </div>
           </div>
           
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <h3 className="text-sm font-medium text-gray-400 mb-2">Total tasks</h3>
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <h3 className="text-sm font-medium text-gray-600 mb-2">Total tasks</h3>
             <div className="flex items-end justify-between">
-              <span className="text-3xl font-bold text-white">{totalTasks}</span>
+              <span className="text-3xl font-bold text-gray-900">{totalTasks}</span>
             </div>
             <div className="text-xs text-gray-500 mt-2">
               {getActiveFiltersCount() > 0 ? `= ${getActiveFiltersCount()} Filter${getActiveFiltersCount() > 1 ? 's' : ''}` : '= No Filters'}
@@ -429,9 +429,9 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
         {/* Chart Widgets */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Tasks by Status */}
-          <div className="bg-gray-800 border border-gray-700 rounded-lg">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="p-6 pb-4">
-              <h3 className="text-lg font-semibold text-white mb-1">Total incomplete tasks by section</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">Total incomplete tasks by section</h3>
             </div>
             <div className="px-6 pb-6">
               <div className="h-80">
@@ -443,15 +443,15 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
                 <div className="text-xs text-gray-500">
                   = {getActiveFiltersCount()} Filter{getActiveFiltersCount() !== 1 ? 's' : ''}
                 </div>
-                <button className="text-xs text-gray-400 hover:text-white">See all</button>
+                <button className="text-xs text-gray-600 hover:text-gray-900">See all</button>
               </div>
             </div>
           </div>
           
           {/* Task Flow Status */}
-          <div className="bg-gray-800 border border-gray-700 rounded-lg">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="p-6 pb-4">
-              <h3 className="text-lg font-semibold text-white mb-1">Task by status</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">Task by status</h3>
             </div>
             <div className="px-6 pb-6">
               <div className="h-80">
@@ -463,15 +463,15 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
                 <div className="text-xs text-gray-500">
                   = {getActiveFiltersCount()} Filter{getActiveFiltersCount() !== 1 ? 's' : ''}
                 </div>
-                <button className="text-xs text-gray-400 hover:text-white">See all</button>
+                <button className="text-xs text-gray-600 hover:text-gray-900">See all</button>
               </div>
             </div>
           </div>
           
           {/* Upcoming tasks by assignee */}
-          <div className="bg-gray-800 border border-gray-700 rounded-lg">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="p-6 pb-4">
-              <h3 className="text-lg font-semibold text-white mb-1">Total upcoming tasks by assignee</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">Total upcoming tasks by assignee</h3>
             </div>
             <div className="px-6 pb-6">
               <div className="h-80">
@@ -483,15 +483,15 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
                 <div className="text-xs text-gray-500">
                   = {getActiveFiltersCount()} Filter{getActiveFiltersCount() !== 1 ? 's' : ''}
                 </div>
-                <button className="text-xs text-gray-400 hover:text-white">See all</button>
+                <button className="text-xs text-gray-600 hover:text-gray-900">See all</button>
               </div>
             </div>
           </div>
           
           {/* Task completion over time */}
-          <div className="bg-gray-800 border border-gray-700 rounded-lg">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="p-6 pb-4">
-              <h3 className="text-lg font-semibold text-white mb-1">Task completion over time</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">Task completion over time</h3>
             </div>
             <div className="px-6 pb-6">
               <div className="h-80">
@@ -503,7 +503,7 @@ export default function ProjectInsights({ setCurrentView }: ProjectInsightsProps
                 <div className="text-xs text-gray-500">
                   {getActiveFiltersCount() > 0 ? `= ${getActiveFiltersCount()} Filter${getActiveFiltersCount() > 1 ? 's' : ''}` : '= No Filters'}
                 </div>
-                <button className="text-xs text-gray-400 hover:text-white">See all</button>
+                <button className="text-xs text-gray-600 hover:text-gray-900">See all</button>
               </div>
             </div>
           </div>
