@@ -34,7 +34,17 @@ export default function MeetingNotes() {
       date: '2025-08-04',
       time: '11:00',
       attendees: ['S', 'C', 'L'],
-      agenda: '<ul><li>Recap</li><li>Mockups</li></ul>',
+      agenda: `1. Project Recap
+   • Review previous sprint achievements
+   • Address outstanding issues
+
+2. Design Mockups Review
+   • Present new design concepts
+   • Gather feedback from stakeholders
+
+3. Next Steps
+   • Finalize design decisions
+   • Plan development timeline`,
       notes: '<p>Agreed on Cosmic theme.</p>',
       actionItems: [
         { id: 'task-01', name: 'Finalize design mockups', assignee: 'Laura', dueDate: '2025-08-05', status: 'inprogress' },
@@ -50,7 +60,17 @@ export default function MeetingNotes() {
       date: '2025-07-28',
       time: '14:00',
       attendees: ['S', 'L'],
-      agenda: '<ul><li>Wireframes</li></ul>',
+      agenda: `1. Wireframe Review
+   • Present updated wireframes
+   • Review user flow improvements
+
+2. Design Approval
+   • Final review of design concepts
+   • Sign-off on wireframe structure
+
+3. Next Phase Planning
+   • Define next design iteration
+   • Set timeline for prototyping`,
       notes: '<p>Wireframes approved.</p>',
       actionItems: []
     }
@@ -231,8 +251,26 @@ export default function MeetingNotes() {
                     <textarea
                       value={newMeetingData.agenda}
                       onChange={(e) => setNewMeetingData(prev => ({ ...prev, agenda: e.target.value }))}
-                      placeholder="Enter agenda items..."
-                      className="w-full min-h-[150px] border-0 bg-transparent resize-none focus:ring-0"
+                      placeholder={`1. Opening Remarks
+   • Welcome and introductions
+   • Review meeting objectives
+
+2. Key Updates Review
+   • Project status updates
+   • Performance metrics
+
+3. Discussion Items
+   • Strategic initiatives
+   • Resource allocation
+
+4. Action Items & Next Steps
+   • Task assignments
+   • Follow-up requirements
+
+5. Closing Remarks
+   • Summary of decisions
+   • Next meeting date`}
+                      className="w-full min-h-[200px] border-0 bg-transparent resize-none focus:ring-0 font-mono text-sm"
                     />
                   </div>
                 </section>
@@ -370,7 +408,9 @@ export default function MeetingNotes() {
                 
                 <section>
                   <h2 className="text-xl font-bold mb-4">Agenda</h2>
-                  <div className="p-4 border rounded-lg bg-gray-50" dangerouslySetInnerHTML={{ __html: selectedMeeting.agenda }} />
+                  <div className="p-4 border rounded-lg bg-gray-50">
+                    <pre className="whitespace-pre-wrap font-mono text-sm text-gray-800">{selectedMeeting.agenda}</pre>
+                  </div>
                 </section>
                 
                 <section>
