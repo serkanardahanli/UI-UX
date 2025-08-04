@@ -91,7 +91,7 @@ export default function MeetingNotes() {
     title: '',
     date: new Date().toISOString().split('T')[0],
     time: '',
-    agenda: '',
+    agenda: '1: ',
     notes: ''
   });
   const [actionItems, setActionItems] = useState<ActionItem[]>([]);
@@ -142,7 +142,7 @@ export default function MeetingNotes() {
       title: '',
       date: new Date().toISOString().split('T')[0],
       time: '',
-      agenda: '',
+      agenda: '1: ',
       notes: ''
     });
   };
@@ -251,25 +251,30 @@ export default function MeetingNotes() {
                     <textarea
                       value={newMeetingData.agenda}
                       onChange={(e) => setNewMeetingData(prev => ({ ...prev, agenda: e.target.value }))}
-                      placeholder={`1. Opening Remarks
-   • Welcome and introductions
-   • Review meeting objectives
-
-2. Key Updates Review
-   • Project status updates
-   • Performance metrics
-
-3. Discussion Items
-   • Strategic initiatives
-   • Resource allocation
-
-4. Action Items & Next Steps
-   • Task assignments
-   • Follow-up requirements
-
-5. Closing Remarks
-   • Summary of decisions
-   • Next meeting date`}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const textarea = e.target as HTMLTextAreaElement;
+                          const cursorPosition = textarea.selectionStart;
+                          const textBeforeCursor = textarea.value.substring(0, cursorPosition);
+                          const textAfterCursor = textarea.value.substring(cursorPosition);
+                          
+                          // Count existing numbered items
+                          const lines = textBeforeCursor.split('\n');
+                          const numberedItems = lines.filter(line => /^\d+:/.test(line.trim()));
+                          const nextNumber = numberedItems.length + 1;
+                          
+                          const newText = textBeforeCursor + '\n' + nextNumber + ': ' + textAfterCursor;
+                          setNewMeetingData(prev => ({ ...prev, agenda: newText }));
+                          
+                          // Set cursor position after the number
+                          setTimeout(() => {
+                            const newCursorPosition = cursorPosition + 1 + nextNumber.toString().length + 2;
+                            textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+                          }, 0);
+                        }
+                      }}
+                      placeholder="Start typing your agenda... Press Enter to add numbered items automatically."
                       className="w-full min-h-[200px] border-0 bg-transparent resize-none focus:ring-0 font-mono text-sm"
                     />
                   </div>
