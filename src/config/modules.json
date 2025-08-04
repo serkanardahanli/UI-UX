@@ -71,6 +71,12 @@
           "label": "Project Insights",
           "component": "ProjectInsights",
           "roles": ["admin", "manager", "user"]
+        },
+        {
+          "path": "/projects/meeting-notes",
+          "label": "Meeting Notes",
+          "component": "MeetingNotes",
+          "roles": ["admin", "manager", "user"]
         }
       ]
     },
