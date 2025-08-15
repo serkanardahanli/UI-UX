@@ -77,14 +77,29 @@
           "label": "Meeting Notes",
           "component": "MeetingNotes",
           "roles": ["admin", "manager", "user"]
-        },
+        }
+      ]
+    },
+    {
+      "id": "crm",
+      "label": "CRM",
+      "icon": "Users",
+      "color": "teal",
+      "entry": "/crm/create-organization",
+      "description": "Customer relationship management and organization tools",
+      "pages": [
         {
-          "path": "/projects/create-organization",
+          "path": "/crm/create-organization",
           "label": "Create Organization",
           "component": "CreateOrganization",
           "roles": ["admin", "manager", "user"]
         }
-      ]
+      ],
+      "permissions": {
+        "admin": ["crm"],
+        "manager": ["crm"],
+        "user": ["crm"]
+      }
     },
     {
       "id": "sales-tool",
@@ -211,11 +226,11 @@
     },
     "manager": {
       "label": "Manager",
-      "permissions": ["project-management", "sales-tool", "calendar", "admin"]
+      "permissions": ["project-management", "crm", "sales-tool", "calendar", "admin"]
     },
     "user": {
       "label": "User",
-      "permissions": ["project-management", "sales-tool", "inbox", "calendar"]
+      "permissions": ["project-management", "crm", "sales-tool", "inbox", "calendar"]
     }
   }
 } 
