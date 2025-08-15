@@ -99,19 +99,42 @@ export default function App() {
 
   // Find the component for the current path
   const getCurrentComponent = () => {
-    // Find the module and page for the current path
-    const module = modulesConfig.modules.find(m => 
-      m.pages.some(p => p.path === currentPath)
-    );
-    
-    if (!module) return () => <div>Page not found</div>;
-    
-    const page = module.pages.find(p => p.path === currentPath);
-    const Component = componentMap[page.component];
-    
-    if (!Component) return () => <div>Component not found</div>;
-    
-    return Component;
+    try {
+      // Find the module and page for the current path
+      const module = modulesConfig.modules.find(m => 
+        m.pages.some(p => p.path === currentPath)
+      );
+      
+      if (!module) {
+        console.warn(`No module found for path: ${currentPath}`);
+        return () => <div style={{padding: '20px'}}>Page not found: {currentPath}</div>;
+      }
+      
+      const page = module.pages.find(p => p.path === currentPath);
+      
+      if (!page) {
+        console.warn(`No page found for path: ${currentPath} in module: ${module.id}`);
+        return () => <div style={{padding: '20px'}}>Page not found: {currentPath}</div>;
+      }
+      
+      const Component = componentMap[page.component];
+      
+      if (!Component) {
+        console.warn(`Component "${page.component}" not found in componentMap for path: ${currentPath}`);
+        return () => <div style={{padding: '20px'}}>Component "{page.component}" not found</div>;
+      }
+      
+      return Component;
+    } catch (error) {
+      console.error('Error in getCurrentComponent:', error);
+      return () => (
+        <div style={{padding: '20px', backgroundColor: '#fee', color: '#900'}}>
+          <h2>Error loading component</h2>
+          <p>Path: {currentPath}</p>
+          <p>Error: {error.message}</p>
+        </div>
+      );
+    }
   };
 
   const handleNavigation = (path) => {
