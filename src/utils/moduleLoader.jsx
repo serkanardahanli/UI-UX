@@ -56,6 +56,9 @@ export const lazyComponents = {
   MeetingNotes: createLazyComponent(() => 
     import('../pages/MeetingNotes')
   ),
+  CreateOrganization: createLazyComponent(() => 
+    import('../pages/CreateOrganization')
+  ),
   TaskBoardView: createLazyComponent(() => 
     import('../pages/TaskBoardView')
   ),

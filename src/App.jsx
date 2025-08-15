@@ -20,6 +20,7 @@ import AddProducts from './pages/AddProducts';
 import AddPaymentMethod from './pages/AddPaymentMethod';
 import ProjectInsights from './pages/ProjectInsights';
 import MeetingNotes from './pages/MeetingNotes';
+import CreateOrganization from './pages/CreateOrganization';
 import ModuleManager from './components/ModuleManager';
 import modulesConfig from './config/modules.json';
 import PipelineSettings from './pages/PipelineSettings';
@@ -67,6 +68,7 @@ const componentMap = {
   ProjectOverview,
   ProjectInsights,
   MeetingNotes,
+  CreateOrganization,
   InboxDashboard,
   TaskDashboard,
   SubtaakPage,

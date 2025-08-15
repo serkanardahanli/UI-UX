@@ -77,6 +77,12 @@
           "label": "Meeting Notes",
           "component": "MeetingNotes",
           "roles": ["admin", "manager", "user"]
+        },
+        {
+          "path": "/projects/create-organization",
+          "label": "Create Organization",
+          "component": "CreateOrganization",
+          "roles": ["admin", "manager", "user"]
         }
       ]
     },
