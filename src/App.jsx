@@ -94,7 +94,7 @@ const componentMap = {
 
 
 export default function App() {
-  const [currentPath, setCurrentPath] = useState('/projects');
+  const [currentPath, setCurrentPath] = useState('/dashboard');
   const [userRole, setUserRole] = useState('admin');
 
   // Find the component for the current path
