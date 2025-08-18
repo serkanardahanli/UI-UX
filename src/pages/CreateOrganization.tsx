@@ -1,57 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { X, ChevronDown, Minus } from 'lucide-react';
+import { X, Upload } from 'lucide-react';
 
-interface Label {
-  id: string;
-  text: string;
-}
-
-interface DynamicField {
-  id: string;
-  value: string;
-}
+type TabType = 'logo' | 'address' | 'social' | 'contact' | 'note';
 
 export default function CreateOrganization() {
-  const [showOrgModal, setShowOrgModal] = useState(false);
-  const [showContactModal, setShowContactModal] = useState(false);
-  const [orgMoreInfo, setOrgMoreInfo] = useState(false);
-  const [contactMoreInfo, setContactMoreInfo] = useState(false);
-  const [orgSubForm, setOrgSubForm] = useState<'newContact' | 'existingContact' | null>(null);
-  const [contactSubForm, setContactSubForm] = useState<'newOrg' | 'existingOrg' | null>(null);
-
-  // Labels state
-  const [orgLabels, setOrgLabels] = useState<Label[]>([]);
-  const [contactLabels, setContactLabels] = useState<Label[]>([]);
-  const [orgLabelInput, setOrgLabelInput] = useState('');
-  const [contactLabelInput, setContactLabelInput] = useState('');
-
-  // Dynamic fields
-  const [orgEmails, setOrgEmails] = useState<DynamicField[]>([{ id: '1', value: '' }]);
-  const [orgPhones, setOrgPhones] = useState<DynamicField[]>([{ id: '1', value: '' }]);
-  const [contactEmails, setContactEmails] = useState<DynamicField[]>([{ id: '1', value: '' }]);
-  const [contactPhones, setContactPhones] = useState<DynamicField[]>([{ id: '1', value: '' }]);
+  const [showModal, setShowModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabType>('logo');
+  const [subForm, setSubForm] = useState<'newContact' | 'existingContact' | null>(null);
 
   // Form data
-  const [orgData, setOrgData] = useState({
-    name: '',
-    address: '',
+  const [formData, setFormData] = useState({
+    companyName: '',
+    orgType: 'Customer',
+    companyAddress: '',
     website: '',
     linkedin: '',
-    type: 'Customer',
-    owner: 'Sevgi Ardahanli (You)'
+    phone: '',
+    email: '',
+    note: '',
+    newContactName: '',
+    newContactEmail: '',
+    existingContact: ''
   });
 
-  const [contactData, setContactData] = useState({
-    name: '',
-    type: 'Prospect',
-    owner: 'Sevgi Ardahanli (You)'
-  });
+  // File upload state
+  const [dragOver, setDragOver] = useState(false);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setShowOrgModal(false);
-        setShowContactModal(false);
+        closeModal();
       }
     };
 
@@ -59,683 +37,356 @@ export default function CreateOrganization() {
     return () => window.removeEventListener('keydown', handleEscape);
   }, []);
 
-  const openModal = (type: 'org' | 'contact') => {
-    if (type === 'org') {
-      setShowOrgModal(true);
-    } else {
-      setShowContactModal(true);
-    }
+  const openModal = () => {
+    setShowModal(true);
     document.body.classList.add('overflow-hidden');
   };
 
-  const closeModal = (type: 'org' | 'contact') => {
-    if (type === 'org') {
-      setShowOrgModal(false);
-    } else {
-      setShowContactModal(false);
-    }
+  const closeModal = () => {
+    setShowModal(false);
     document.body.classList.remove('overflow-hidden');
   };
 
-  const addLabel = (type: 'org' | 'contact') => {
-    const input = type === 'org' ? orgLabelInput : contactLabelInput;
-    const labels = type === 'org' ? orgLabels : contactLabels;
-    
-    if (input.trim() && !labels.find(label => label.text === input.trim())) {
-      const newLabel = { id: Date.now().toString(), text: input.trim() };
-      if (type === 'org') {
-        setOrgLabels([...orgLabels, newLabel]);
-        setOrgLabelInput('');
-      } else {
-        setContactLabels([...contactLabels, newLabel]);
-        setContactLabelInput('');
-      }
-    }
+  const switchTab = (tabName: TabType) => {
+    setActiveTab(tabName);
   };
 
-  const removeLabel = (type: 'org' | 'contact', labelId: string) => {
-    if (type === 'org') {
-      setOrgLabels(orgLabels.filter(label => label.id !== labelId));
-    } else {
-      setContactLabels(contactLabels.filter(label => label.id !== labelId));
-    }
+  const toggleSubForm = (formType: 'newContact' | 'existingContact') => {
+    setSubForm(subForm === formType ? null : formType);
   };
 
-  const addDynamicField = (type: 'orgEmails' | 'orgPhones' | 'contactEmails' | 'contactPhones') => {
-    const newField = { id: Date.now().toString(), value: '' };
-    
-    switch (type) {
-      case 'orgEmails':
-        setOrgEmails([...orgEmails, newField]);
-        break;
-      case 'orgPhones':
-        setOrgPhones([...orgPhones, newField]);
-        break;
-      case 'contactEmails':
-        setContactEmails([...contactEmails, newField]);
-        break;
-      case 'contactPhones':
-        setContactPhones([...contactPhones, newField]);
-        break;
-    }
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const removeDynamicField = (type: 'orgEmails' | 'orgPhones' | 'contactEmails' | 'contactPhones', fieldId: string) => {
-    switch (type) {
-      case 'orgEmails':
-        setOrgEmails(orgEmails.filter(field => field.id !== fieldId));
-        break;
-      case 'orgPhones':
-        setOrgPhones(orgPhones.filter(field => field.id !== fieldId));
-        break;
-      case 'contactEmails':
-        setContactEmails(contactEmails.filter(field => field.id !== fieldId));
-        break;
-      case 'contactPhones':
-        setContactPhones(contactPhones.filter(field => field.id !== fieldId));
-        break;
-    }
+  // Drag and drop handlers
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(true);
   };
 
-  const updateDynamicField = (type: 'orgEmails' | 'orgPhones' | 'contactEmails' | 'contactPhones', fieldId: string, value: string) => {
-    switch (type) {
-      case 'orgEmails':
-        setOrgEmails(orgEmails.map(field => field.id === fieldId ? { ...field, value } : field));
-        break;
-      case 'orgPhones':
-        setOrgPhones(orgPhones.map(field => field.id === fieldId ? { ...field, value } : field));
-        break;
-      case 'contactEmails':
-        setContactEmails(contactEmails.map(field => field.id === fieldId ? { ...field, value } : field));
-        break;
-      case 'contactPhones':
-        setContactPhones(contactPhones.map(field => field.id === fieldId ? { ...field, value } : field));
-        break;
-    }
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
   };
 
-  const toggleSubForm = (type: 'org' | 'contact', formType: string) => {
-    if (type === 'org') {
-      setOrgSubForm(orgSubForm === formType ? null : formType as 'newContact' | 'existingContact');
-    } else {
-      setContactSubForm(contactSubForm === formType ? null : formType as 'newOrg' | 'existingOrg');
-    }
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const files = e.dataTransfer.files;
+    console.log('Files dropped:', files);
+    // Handle file upload logic here
   };
 
-  const handleSave = (type: 'org' | 'contact') => {
-    // Here you would typically handle the form submission
-    console.log(`Saving ${type} data:`, type === 'org' ? orgData : contactData);
-    closeModal(type);
+  const handleSave = () => {
+    console.log('Saving company data:', formData);
+    closeModal();
   };
 
-  const DynamicFieldsComponent = ({ 
-    fields, 
-    type, 
-    placeholder, 
-    fieldType, 
-    colorScheme 
-  }: {
-    fields: DynamicField[];
-    type: 'orgEmails' | 'orgPhones' | 'contactEmails' | 'contactPhones';
-    placeholder: string;
-    fieldType: 'email' | 'tel';
-    colorScheme: string;
-  }) => (
-    <div className="space-y-2">
-      {fields.map((field, index) => (
-        <div key={field.id} className="flex items-center gap-2">
-          <input
-            type={fieldType}
-            value={field.value}
-            onChange={(e) => updateDynamicField(type, field.id, e.target.value)}
-            className={`block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-${colorScheme}-500 focus:border-${colorScheme}-500 sm:text-sm`}
-            placeholder={placeholder}
-          />
-          {fields.length > 1 && (
-            <button
-              type="button"
-              onClick={() => removeDynamicField(type, field.id)}
-              className="text-slate-400 hover:text-red-500"
-            >
-              <Minus className="w-5 h-5" />
-            </button>
-          )}
-        </div>
-      ))}
-      <button
-        type="button"
-        onClick={() => addDynamicField(type)}
-        className={`text-sm font-semibold text-${colorScheme}-600 hover:text-${colorScheme}-800`}
-      >
-        + Add another
-      </button>
-    </div>
-  );
 
-  const LabelsComponent = ({ 
-    labels, 
-    input, 
-    setInput, 
-    onAdd, 
-    onRemove, 
-    colorScheme, 
-    placeholder 
-  }: {
-    labels: Label[];
-    input: string;
-    setInput: (value: string) => void;
-    onAdd: () => void;
-    onRemove: (id: string) => void;
-    colorScheme: string;
-    placeholder: string;
-  }) => (
-    <div className={`flex flex-wrap items-center gap-2 p-1 border border-slate-300 rounded-md focus-within:ring-1 focus-within:ring-${colorScheme}-500 focus-within:border-${colorScheme}-500`}>
-      <div className="flex flex-wrap gap-1">
-        {labels.map(label => (
-          <span
-            key={label.id}
-            className={`flex items-center gap-1 bg-${colorScheme}-100 text-${colorScheme}-700 text-xs font-semibold px-2.5 py-1 rounded-full`}
-          >
-            {label.text}
-            <button
-              type="button"
-              onClick={() => onRemove(label.id)}
-              className={`text-${colorScheme}-400 hover:text-${colorScheme}-600`}
-            >
-              <X className="w-3 h-3" />
-            </button>
-          </span>
-        ))}
-      </div>
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            onAdd();
-          }
-        }}
-        className="flex-grow border-none focus:ring-0 p-1 text-sm"
-        placeholder={placeholder}
-      />
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-slate-100">
       {/* Main Page Content */}
-      <div className="flex items-center justify-center h-screen space-x-4">
+      <div className="flex items-center justify-center h-screen">
         <button
-          onClick={() => openModal('org')}
+          onClick={openModal}
           className="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-75"
         >
-          Add Organization
-        </button>
-        <button
-          onClick={() => openModal('contact')}
-          className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75"
-        >
-          Add Contact
+          Add Company
         </button>
       </div>
 
-      {/* Add Organization Modal */}
-      {showOrgModal && (
+      {/* Add Company Modal */}
+      {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-black bg-opacity-50 transition-opacity duration-300">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-lg mx-4 transform transition-transform duration-300">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-5 border-b border-slate-200">
-              <h3 className="text-xl font-semibold text-slate-800">Add Organization</h3>
-              <button onClick={() => closeModal('org')} className="text-slate-400 hover:text-slate-600">
+              <h3 className="text-xl font-semibold text-slate-800">Add company</h3>
+              <button onClick={closeModal} className="text-slate-400 hover:text-slate-600">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700">Organization Name</label>
-                  <input
-                    type="text"
-                    value={orgData.name}
-                    onChange={(e) => setOrgData({ ...orgData, name: e.target.value })}
-                    className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    placeholder="FlowQi Inc."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700">Address</label>
-                  <input
-                    type="text"
-                    value={orgData.address}
-                    onChange={(e) => setOrgData({ ...orgData, address: e.target.value })}
-                    className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    placeholder="123 FlowQi Street, New York"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">Email</label>
-                  <DynamicFieldsComponent
-                    fields={orgEmails}
-                    type="orgEmails"
-                    placeholder="contact@flowqi.com"
-                    fieldType="email"
-                    colorScheme="indigo"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">Phone</label>
-                  <DynamicFieldsComponent
-                    fields={orgPhones}
-                    type="orgPhones"
-                    placeholder="555-123-4567"
-                    fieldType="tel"
-                    colorScheme="indigo"
-                  />
-                </div>
-              </div>
-
+            <div className="p-6 space-y-5">
               <div>
-                <label className="block text-sm font-medium text-slate-700">
-                  Organization Type <span className="text-red-500">*</span>
+                <label htmlFor="companyName" className="block text-sm font-medium text-slate-700 mb-1">
+                  Company name <span className="text-red-500">*</span>
                 </label>
-                <div className="relative mt-1">
-                  <select
-                    value={orgData.type}
-                    onChange={(e) => setOrgData({ ...orgData, type: e.target.value })}
-                    className="appearance-none block w-full pl-3 pr-10 py-2 text-base border border-slate-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                  >
-                    <option>Customer</option>
-                    <option>Supplier</option>
-                    <option>Lead</option>
-                    <option>Partner</option>
-                    <option>Archived</option>
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
-                    <ChevronDown className="h-5 w-5" />
-                  </div>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setOrgMoreInfo(!orgMoreInfo)}
-                className="text-sm font-semibold text-indigo-600 hover:text-indigo-800"
-              >
-                More details...
-              </button>
-
-              {orgMoreInfo && (
-                <div className="space-y-6 transition-all duration-300">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700">Website</label>
-                      <input
-                        type="text"
-                        value={orgData.website}
-                        onChange={(e) => setOrgData({ ...orgData, website: e.target.value })}
-                        className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        placeholder="www.flowqi.com"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700">LinkedIn</label>
-                      <input
-                        type="text"
-                        value={orgData.linkedin}
-                        onChange={(e) => setOrgData({ ...orgData, linkedin: e.target.value })}
-                        className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        placeholder="linkedin.com/company/flowqi"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700">Owner</label>
-                      <div className="relative mt-1">
-                        <select
-                          value={orgData.owner}
-                          onChange={(e) => setOrgData({ ...orgData, owner: e.target.value })}
-                          className="appearance-none block w-full pl-3 pr-10 py-2 text-base border border-slate-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                        >
-                          <option>Sevgi Ardahanli (You)</option>
-                          <option>John Doe</option>
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
-                          <ChevronDown className="h-5 w-5" />
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700">Labels</label>
-                      <div className="relative mt-1">
-                        <LabelsComponent
-                          labels={orgLabels}
-                          input={orgLabelInput}
-                          setInput={setOrgLabelInput}
-                          onAdd={() => addLabel('org')}
-                          onRemove={(id) => removeLabel('org', id)}
-                          colorScheme="indigo"
-                          placeholder="Add label..."
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="border-t border-slate-200 pt-4">
-                <label className="block text-sm font-medium text-slate-700 mb-2">Contact Person (optional)</label>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => toggleSubForm('org', 'newContact')}
-                    className={`w-full text-sm font-medium p-2 border border-slate-300 rounded-md hover:bg-slate-50 text-slate-700 ${
-                      orgSubForm === 'newContact' ? 'bg-slate-100' : ''
-                    }`}
-                  >
-                    New Contact
-                  </button>
-                  <button
-                    onClick={() => toggleSubForm('org', 'existingContact')}
-                    className={`w-full text-sm font-medium p-2 border border-slate-300 rounded-md hover:bg-slate-50 text-slate-700 ${
-                      orgSubForm === 'existingContact' ? 'bg-slate-100' : ''
-                    }`}
-                  >
-                    Existing Contact
-                  </button>
-                </div>
-
-                {orgSubForm && (
-                  <div className="mt-4 transition-all duration-300">
-                    {orgSubForm === 'newContact' && (
-                      <div className="p-4 border border-slate-200 rounded-lg bg-slate-50 space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700">Name</label>
-                          <input
-                            type="text"
-                            className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            placeholder="New Contact"
-                          />
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700">Email</label>
-                            <input
-                              type="email"
-                              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700">Phone</label>
-                            <input
-                              type="tel"
-                              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700">
-                            Contact Type <span className="text-red-500">*</span>
-                          </label>
-                          <select className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                            <option>Prospect</option>
-                            <option>Member</option>
-                          </select>
-                        </div>
-                      </div>
-                    )}
-                    {orgSubForm === 'existingContact' && (
-                      <div className="p-4 border border-slate-200 rounded-lg bg-slate-50">
-                        <label className="block text-sm font-medium text-slate-700">Select contact</label>
-                        <select className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                          <option>Search or select a contact...</option>
-                          <option>Benjamin Leon</option>
-                        </select>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="flex items-center justify-end p-5 border-t border-slate-200 bg-slate-50 rounded-b-lg">
-              <button
-                onClick={() => closeModal('org')}
-                className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-md hover:bg-slate-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleSave('org')}
-                className="ml-3 px-4 py-2 text-sm font-medium text-white bg-indigo-600 border rounded-md shadow-sm hover:bg-indigo-700"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Add Contact Modal */}
-      {showContactModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-black bg-opacity-50 transition-opacity duration-300">
-          <div className="bg-white rounded-lg shadow-2xl w-full max-w-lg mx-4 transform transition-transform duration-300">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-5 border-b border-slate-200">
-              <h3 className="text-xl font-semibold text-slate-800">Add Contact Person</h3>
-              <button onClick={() => closeModal('contact')} className="text-slate-400 hover:text-slate-600">
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="p-6 space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-700">Name</label>
                 <input
                   type="text"
-                  value={contactData.name}
-                  onChange={(e) => setContactData({ ...contactData, name: e.target.value })}
-                  className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                  placeholder="Jane Smith"
+                  id="companyName"
+                  value={formData.companyName}
+                  onChange={(e) => handleInputChange('companyName', e.target.value)}
+                  className="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">Email</label>
-                  <DynamicFieldsComponent
-                    fields={contactEmails}
-                    type="contactEmails"
-                    placeholder="jane@example.com"
-                    fieldType="email"
-                    colorScheme="green"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">Phone</label>
-                  <DynamicFieldsComponent
-                    fields={contactPhones}
-                    type="contactPhones"
-                    placeholder="555-987-6543"
-                    fieldType="tel"
-                    colorScheme="green"
-                  />
-                </div>
-              </div>
-
+              
               <div>
-                <label className="block text-sm font-medium text-slate-700">
-                  Contact Type <span className="text-red-500">*</span>
+                <label htmlFor="orgType" className="block text-sm font-medium text-slate-700 mb-1">
+                  Organization Type <span className="text-red-500">*</span>
                 </label>
-                <div className="relative mt-1">
-                  <select
-                    value={contactData.type}
-                    onChange={(e) => setContactData({ ...contactData, type: e.target.value })}
-                    className="appearance-none block w-full pl-3 pr-10 py-2 text-base border border-slate-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md"
-                  >
-                    <option>Prospect</option>
-                    <option>Member</option>
-                    <option>Supplier</option>
-                    <option>Employee</option>
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
-                    <ChevronDown className="h-5 w-5" />
-                  </div>
-                </div>
+                <select
+                  id="orgType"
+                  value={formData.orgType}
+                  onChange={(e) => handleInputChange('orgType', e.target.value)}
+                  className="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                >
+                  <option>Customer</option>
+                  <option>Supplier</option>
+                  <option>Lead</option>
+                  <option>Partner</option>
+                </select>
               </div>
 
-              <button
-                onClick={() => setContactMoreInfo(!contactMoreInfo)}
-                className="text-sm font-semibold text-green-600 hover:text-green-800"
-              >
-                More details...
-              </button>
+              {/* Tab Navigation */}
+              <div className="border-b border-slate-200">
+                <nav className="-mb-px flex space-x-6" aria-label="Tabs">
+                  <button
+                    onClick={() => switchTab('logo')}
+                    className={`whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                      activeTab === 'logo'
+                        ? 'text-indigo-600 border-indigo-600'
+                        : 'text-slate-500 border-transparent hover:text-indigo-600'
+                    }`}
+                  >
+                    Logo
+                  </button>
+                  <button
+                    onClick={() => switchTab('address')}
+                    className={`whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                      activeTab === 'address'
+                        ? 'text-indigo-600 border-indigo-600'
+                        : 'text-slate-500 border-transparent hover:text-indigo-600'
+                    }`}
+                  >
+                    Address
+                  </button>
+                  <button
+                    onClick={() => switchTab('social')}
+                    className={`whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                      activeTab === 'social'
+                        ? 'text-indigo-600 border-indigo-600'
+                        : 'text-slate-500 border-transparent hover:text-indigo-600'
+                    }`}
+                  >
+                    Social
+                  </button>
+                  <button
+                    onClick={() => switchTab('contact')}
+                    className={`whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                      activeTab === 'contact'
+                        ? 'text-indigo-600 border-indigo-600'
+                        : 'text-slate-500 border-transparent hover:text-indigo-600'
+                    }`}
+                  >
+                    Contact
+                  </button>
+                  <button
+                    onClick={() => switchTab('note')}
+                    className={`whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                      activeTab === 'note'
+                        ? 'text-indigo-600 border-indigo-600'
+                        : 'text-slate-500 border-transparent hover:text-indigo-600'
+                    }`}
+                  >
+                    Note
+                  </button>
+                </nav>
+              </div>
 
-              {contactMoreInfo && (
-                <div className="space-y-6 transition-all duration-300">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Tab Content */}
+              <div className="pt-2">
+                {/* Logo Tab */}
+                {activeTab === 'logo' && (
+                  <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    className={`flex flex-col items-center justify-center w-full h-32 px-4 text-center border-2 border-dashed rounded-lg cursor-pointer transition-colors duration-200 ${
+                      dragOver
+                        ? 'border-indigo-500 bg-indigo-50'
+                        : 'border-slate-300 bg-slate-50 hover:bg-slate-100'
+                    }`}
+                  >
+                    <Upload className="w-8 h-8 mb-3 text-slate-400" />
+                    <p className="text-sm text-slate-500">
+                      <span className="font-semibold">Drag and drop your file here.</span>{' '}
+                      <span className="text-indigo-600">Browse files</span>
+                    </p>
+                    <p className="text-xs text-slate-400 mt-1">JPEG, JPG, PNG, GIF, or PDF</p>
+                    <input type="file" className="hidden" />
+                  </div>
+                )}
+
+                {/* Address Tab */}
+                {activeTab === 'address' && (
+                  <div>
+                    <label htmlFor="companyAddress" className="block text-sm font-medium text-slate-700 mb-1">
+                      Company Address
+                    </label>
+                    <input
+                      type="text"
+                      id="companyAddress"
+                      value={formData.companyAddress}
+                      onChange={(e) => handleInputChange('companyAddress', e.target.value)}
+                      className="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      placeholder="Search address..."
+                    />
+                  </div>
+                )}
+
+                {/* Social Tab */}
+                {activeTab === 'social' && (
+                  <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700">Owner</label>
-                      <div className="relative mt-1">
-                        <select
-                          value={contactData.owner}
-                          onChange={(e) => setContactData({ ...contactData, owner: e.target.value })}
-                          className="appearance-none block w-full pl-3 pr-10 py-2 text-base border border-slate-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md"
-                        >
-                          <option>Sevgi Ardahanli (You)</option>
-                          <option>John Doe</option>
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
-                          <ChevronDown className="h-5 w-5" />
-                        </div>
-                      </div>
+                      <label htmlFor="website" className="block text-sm font-medium text-slate-700 mb-1">
+                        Website
+                      </label>
+                      <input
+                        type="text"
+                        id="website"
+                        value={formData.website}
+                        onChange={(e) => handleInputChange('website', e.target.value)}
+                        className="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700">Labels</label>
-                      <div className="relative mt-1">
-                        <LabelsComponent
-                          labels={contactLabels}
-                          input={contactLabelInput}
-                          setInput={setContactLabelInput}
-                          onAdd={() => addLabel('contact')}
-                          onRemove={(id) => removeLabel('contact', id)}
-                          colorScheme="green"
-                          placeholder="Add label..."
-                        />
-                      </div>
+                      <label htmlFor="linkedin" className="block text-sm font-medium text-slate-700 mb-1">
+                        LinkedIn
+                      </label>
+                      <input
+                        type="text"
+                        id="linkedin"
+                        value={formData.linkedin}
+                        onChange={(e) => handleInputChange('linkedin', e.target.value)}
+                        className="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1">
+                        Phone
+                      </label>
+                      <input
+                        type="tel"
+                        id="phone"
+                        value={formData.phone}
+                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        className="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        className="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              <div className="border-t border-slate-200 pt-4">
-                <label className="block text-sm font-medium text-slate-700 mb-2">Organization (optional)</label>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => toggleSubForm('contact', 'newOrg')}
-                    className={`w-full text-sm font-medium p-2 border border-slate-300 rounded-md hover:bg-slate-50 text-slate-700 ${
-                      contactSubForm === 'newOrg' ? 'bg-slate-100' : ''
-                    }`}
-                  >
-                    New Organization
-                  </button>
-                  <button
-                    onClick={() => toggleSubForm('contact', 'existingOrg')}
-                    className={`w-full text-sm font-medium p-2 border border-slate-300 rounded-md hover:bg-slate-50 text-slate-700 ${
-                      contactSubForm === 'existingOrg' ? 'bg-slate-100' : ''
-                    }`}
-                  >
-                    Existing Organization
-                  </button>
-                </div>
-
-                {contactSubForm && (
-                  <div className="mt-4 transition-all duration-300">
-                    {contactSubForm === 'newOrg' && (
-                      <div className="p-4 border border-slate-200 rounded-lg bg-slate-50 space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700">Organization Name</label>
-                            <input
-                              type="text"
-                              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                              placeholder="New Corp"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700">Address</label>
-                            <input
-                              type="text"
-                              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                            />
-                          </div>
+                {/* Contact Tab */}
+                {activeTab === 'contact' && (
+                  <div>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => toggleSubForm('newContact')}
+                        className="w-full text-sm font-medium p-2 border border-slate-300 rounded-md hover:bg-slate-50 text-slate-700"
+                      >
+                        New Contact
+                      </button>
+                      <button
+                        onClick={() => toggleSubForm('existingContact')}
+                        className="w-full text-sm font-medium p-2 border border-slate-300 rounded-md hover:bg-slate-50 text-slate-700"
+                      >
+                        Existing Contact
+                      </button>
+                    </div>
+                    
+                    <div className={`mt-4 transition-all duration-400 overflow-hidden ${subForm ? 'max-h-96' : 'max-h-0'}`}>
+                      {subForm === 'newContact' && (
+                        <div className="p-4 border border-slate-200 rounded-lg bg-slate-50 space-y-4">
+                          <label className="block text-sm font-medium text-slate-700">Create New Contact</label>
+                          <input
+                            type="text"
+                            value={formData.newContactName}
+                            onChange={(e) => handleInputChange('newContactName', e.target.value)}
+                            placeholder="Contact Name"
+                            className="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          />
+                          <input
+                            type="email"
+                            value={formData.newContactEmail}
+                            onChange={(e) => handleInputChange('newContactEmail', e.target.value)}
+                            placeholder="Contact Email"
+                            className="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          />
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700">Email</label>
-                            <input
-                              type="email"
-                              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700">Phone</label>
-                            <input
-                              type="tel"
-                              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700">
-                            Organization Type <span className="text-red-500">*</span>
+                      )}
+                      {subForm === 'existingContact' && (
+                        <div className="p-4 border border-slate-200 rounded-lg bg-slate-50">
+                          <label htmlFor="selectExistingContact" className="block text-sm font-medium text-slate-700">
+                            Select Existing Contact
                           </label>
-                          <select className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
-                            <option>Customer</option>
-                            <option>Supplier</option>
+                          <select
+                            id="selectExistingContact"
+                            value={formData.existingContact}
+                            onChange={(e) => handleInputChange('existingContact', e.target.value)}
+                            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                          >
+                            <option>Search or select a contact...</option>
+                            <option>Benjamin Leon</option>
                           </select>
                         </div>
-                      </div>
-                    )}
-                    {contactSubForm === 'existingOrg' && (
-                      <div className="p-4 border border-slate-200 rounded-lg bg-slate-50">
-                        <label className="block text-sm font-medium text-slate-700">Select organization</label>
-                        <select className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
-                          <option>Search or select an organization...</option>
-                          <option>EmpowerMove</option>
-                        </select>
-                      </div>
-                    )}
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Note Tab */}
+                {activeTab === 'note' && (
+                  <div>
+                    <label htmlFor="note" className="block text-sm font-medium text-slate-700 mb-1">
+                      Note
+                    </label>
+                    <textarea
+                      id="note"
+                      rows={4}
+                      value={formData.note}
+                      onChange={(e) => handleInputChange('note', e.target.value)}
+                      className="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
                   </div>
                 )}
               </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-end p-5 border-t border-slate-200 bg-slate-50 rounded-b-lg">
+            <div className="flex items-center justify-between p-5 border-t border-slate-200 bg-slate-50 rounded-b-lg">
               <button
-                onClick={() => closeModal('contact')}
+                onClick={closeModal}
                 className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-md hover:bg-slate-50"
               >
                 Cancel
               </button>
               <button
-                onClick={() => handleSave('contact')}
-                className="ml-3 px-4 py-2 text-sm font-medium text-white bg-green-600 border rounded-md shadow-sm hover:bg-green-700"
+                onClick={handleSave}
+                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border rounded-md shadow-sm hover:bg-indigo-700"
               >
-                Save
+                Add company
               </button>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 }
